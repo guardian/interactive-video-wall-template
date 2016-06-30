@@ -1,0 +1,546 @@
+/* GUSS WEBFONTS - DEV ONLY */
+
+/**
+ * Base URL
+ * HTTP path or url where the browser will look for fonts
+ * URL can be an absolute HTTP (`//pasteup.guim.co.uk/fonts/`) or relative (`../`)
+ */
+
+// if you use an asset domain, you would set it to:
+// $guss-webfonts-base-url: '//assets.yourdomain.com/path/to/guss-webfonts';
+$guss-webfonts-base-url: '//pasteup.guim.co.uk/fonts/';
+
+/**
+ * Charset
+ *
+ * - ascii: 256 characters only, very small
+ * - latin1: latin 1 character set
+ * - original: full character set
+ */
+$guss-webfonts-charset: 'original';
+
+/**
+ * Hinting
+ *
+ * - cleartype: larger file, better rendering in Windows
+ * - auto: even larger file, better rendering in Windows in Chrome with 
+ *   font-smoothing disabled (the default in XP pre-servicepack 1)
+ * - off: smaller files, render well on HiDPI displays
+ */
+$guss-webfonts-hinting: 'off';
+
+/**
+ * Kerning
+ *
+ * - on: larger file, better rendering
+ * - off: smaller files
+ */
+$guss-webfonts-kerning: 'on';
+
+/**
+ * Version
+ *
+ * Version of the fonts to use
+ */
+$guss-webfonts-version: '0.1.0';
+
+
+@import '../../bower_components/guss-webfonts/src/_webfonts';
+
+// Outputs @font-face rules for all the fonts licensed
+// to the Guardian for the web
+@include guss-webfonts();
+
+/* GUSS WEBFONTS END */
+
+
+
+/* 
+ *
+ * VIDEO WALL STYLING 
+ *
+ */
+
+/* Variables */
+$font-sans-serif: "Guardian Text Sans Web","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+$font-serif: "Guardian Text Egyptian Web",Georgia,serif;
+
+$color-bg: black;
+$color-text: #999;
+$color-title: white;
+$color-link: #dcdcdc;
+$color-text-highlight: #fb0;
+$color-border: rgba(255,255,255,0.25);
+
+$border-divider: 1px dotted $color-border;
+
+/* Mixins */
+@mixin aspect-ratio($width, $height) {
+	position: relative;
+	
+	&:before {
+		display: block;
+		content: "";
+		width: 100%;
+		padding-top: ($height / $width) * 100%;
+	}
+	
+	> .inner {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
+		right: 1rem;
+		bottom: 1rem;
+	}
+}
+
+/* General */
+body {
+	background: $color-bg;
+	color: $color-text;
+	font-family: $font-serif;
+	margin: 0;
+	padding: 0;
+
+	figure {
+		margin: 0;
+		padding: 0;
+	}
+}
+
+.vw-interactive {
+	a {
+		text-decoration: underline;
+		color: $color-link;
+
+		&:focus,
+		&:hover {
+			text-decoration: underline;
+			color: $color-title;
+		}
+	}
+
+	hr {
+		margin: 2rem 0 0;
+		padding: 0.75rem 0 0;
+		border: 0;
+		border-top: $border-divider;
+		max-width: 5rem;
+	}
+}
+
+.vw-icon {
+	path,
+	polygon {
+		fill: $color-text;
+		color: $color-text;
+	}
+
+	&-xs {
+		max-width: 0.75rem;
+		max-height: 0.75rem;
+	}
+
+	&-sm {
+		max-width: 1.2rem;
+		max-height: 1.2rem;
+	}
+
+	&-md {
+		max-width: 1.8rem;
+		max-height: 1.8rem;
+	}
+
+	&-lg {
+		max-width: 2.4rem;
+		max-height: 2.4rem;
+	}
+
+	&-inline {
+		margin-top: -0.2rem;
+		display: inline-block;
+		vertical-align: middle;
+	}
+}
+
+.vw-list {
+	&-unstyled {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+
+		> li {
+			margin: 0;
+			padding: 0;
+		}
+	}
+
+	&-inline {
+		> li {
+			margin: 0;
+			padding: 0;
+			display: inline-block;
+		}		
+	}
+}
+
+.vw-social-sharing {
+	overflow: hidden;
+	margin: 0 2rem;
+
+	> li.vw-social-sharing-item {
+		margin-right: 0.5rem;
+		float: left;
+		display: block;
+		overflow: hidden;
+		position: relative;
+		min-width: 2.4rem;
+		
+		a {
+			display: block;
+			overflow: hidden;
+			-moz-border-radius: 50%;
+			-webkit-border-radius: 50%;
+			border-radius: 50%;
+			border: 1px solid $color-border;
+			width: 2.4rem;
+			height: 2.4rem;
+		}
+	}
+}
+
+/* Structure */
+.vw-container {
+	position: relative;
+	overflow: hidden;
+	margin: 0 auto;
+
+	@media (max-width: 739px) {
+		width: 100%;
+	}
+
+	@media (min-width: 740px) and (max-width: 979px) {
+		max-width: 46.25rem;
+	}
+
+	@media (min-width: 980px) and (max-width: 1139px) {
+		max-width: 61.25rem;
+	}
+
+	@media (min-width: 1140px) and (max-width: 1299px) {
+		max-width: 71.25rem;
+	}
+
+	@media (min-width: 1300px) {
+		max-width: 81.25rem;
+	}
+
+	&-fluid {
+		width: 100%;
+	}
+
+	&-constrained {
+		max-width: 70%;
+
+		@media (max-width: 739px) {
+			max-width: 100%;
+		}
+	}
+
+	&-left {
+		float: left;
+		width: 50%;
+	}
+
+	&-right {
+		float: left;
+		width: 50%;
+	}
+}
+
+/* Header */
+.vw-header {
+	padding-bottom: 5rem;
+
+	&-banner {
+		&-media {
+			height: 100vh;
+			position: relative;
+			z-index: 0;
+
+			img {
+				object-fit: cover;
+				position: absolute;
+				top: 0;
+				height: 100%;
+				width: 100%;
+			}
+		}
+
+		&-body {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			z-index: 1;
+			padding: 2rem 0 0;
+			background-color: rgba(0,0,0,0.6);
+			background: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0.5)), to($color-bg));
+			background: -webkit-linear-gradient(rgba(0,0,0,0.5), $color-bg);
+			background: linear-gradient(rgba(0,0,0,0.5), $color-bg);
+
+			&-hub {
+				margin: 0;
+				padding: 0;
+				font-size: 1rem;
+				line-height: 1.25rem;
+				font-weight: 200;
+				margin: 0 2rem;
+
+				a {
+					font-weight: 900;
+					color: $color-text-highlight;
+					text-decoration: none;
+				}
+			}
+
+			&-title {
+				margin: 0;
+				font-size: 2.25rem;
+				line-height: 2.5rem;
+				font-weight: 200;
+				padding: 0.6rem 0 2rem;
+				border-bottom: $border-divider;
+				color: $color-title;
+				margin: 0 2rem;
+
+				.vw-icon {
+					path,
+					polygon {
+						fill: $color-text-highlight;
+						color: $color-text-highlight;
+					}
+				}
+			}
+		}
+	}
+
+	&-social {
+		padding: 1rem 0 1.6rem;
+		min-height: 3rem;
+
+		&-count {
+			width: 6rem;
+			position: absolute;
+			right: 2rem;
+			top: 0;
+
+			small {
+				font-family: $font-sans-serif;
+				white-space: nowrap;
+			}
+
+			p {
+				margin: 0;
+				padding: 0;
+				font-size: 1.125rem;
+				font-weight: 500;
+				color: $color-title;
+			}
+		}
+	}
+
+	&-standfirst {
+		p {
+			margin-top: 0;
+			margin-right: 12rem;
+		}
+
+		&-supporter {
+			position: absolute;
+			right: 0;
+			top: 0;
+			width: 6rem;
+
+			small {
+				font-family: $font-sans-serif;
+				font-size: 0.7rem;
+			}
+
+			&-media {
+				margin: 0.6rem 0;
+
+				img {
+					width: 100%;
+					display: block;
+				}
+			}
+		}
+	}
+}
+
+/* Video Tiles */
+
+.vw-video-tiles {
+	overflow: hidden;
+	margin: 0 2rem;
+
+	&-item {
+		float: left;
+		position: relative;
+		width: 33.33333%;
+		@include aspect-ratio(16, 9);
+
+		&-inner {
+			background: blue;
+			display: block;
+			overflow: hidden;
+		}
+
+		&:before {
+			border-right: $border-divider;
+		}
+
+		&:after {
+			content: "";
+			display: block;
+			width: 100%;
+			height: 0;
+			border-top: $border-divider;
+		}
+
+		&-media {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			overflow: hidden;
+			z-index: 0;
+
+			img {
+				object-fit: cover;
+				position: absolute;
+				top: 0;
+				height: 100%;
+				width: 100%;
+			}
+		}
+
+		&-body {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			overflow: hidden;
+			z-index: 1;
+			text-align: center;
+		}
+	}
+
+	> div:nth-child(1),
+	> div:nth-child(2),
+	> div:nth-child(3) {
+		.inner {
+			top: 0;
+		}
+	}
+
+	> div:first-of-type {
+		.inner {
+			left: 0;
+		}
+	}
+
+	> div:nth-child(4) {
+		.inner {
+			left: 0;
+		}
+	}
+
+	> div:nth-child(3) {
+		.inner {
+			right: 0;
+		}
+	}
+
+	> div:last-of-type {
+		.inner {
+			right: 0;
+		}
+	}
+
+	> div:nth-last-child(1),
+	> div:nth-last-child(2),
+	> div:nth-last-child(3) {
+		.inner {
+			bottom: 0;
+		}
+
+		&:after {
+			content: "";
+			display: block;
+			width: 100%;
+			height: 0;
+			border: 0;
+		}
+	}
+}
+
+.vw-video {
+	&-button-play {
+		width: 4rem;
+		height: 4rem;
+		font-size: 0.5625rem;
+		position: relative;
+
+		&:before {
+			-moz-border-radius: 50%;
+			-webkit-border-radius: 50%;
+			border-radius: 50%;
+			width: 4rem;
+			height: 4rem;
+			font-size: 0.5625rem;
+			content: '';
+			display: block;
+			background-color: $color-text-highlight;
+		}
+
+		&:after {
+			content: '';
+			position: absolute;
+			left: 1.4rem;
+			top: 1.4rem;
+			border-style: solid;
+			border-width: 1.2em 0 1.2em 3em;
+			border-color: transparent transparent transparent $color-bg;
+			-moz-transform: scale(0.99999);
+		}
+	}
+}
+
+/* Breakpoints */
+
+@media (max-width: 739px) {
+
+}
+
+@media (min-width: 740px) {
+
+}
+
+@media (min-width: 740px) and (max-width: 979px) {
+
+}
+
+@media (min-width: 980px) and (max-width: 1139px) {
+
+}
+
+@media (min-width: 1140px) and (max-width: 1299px) {
+
+}
+
+@media (min-width: 1300px) {
+	
+}
