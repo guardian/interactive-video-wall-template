@@ -71,6 +71,8 @@ $color-title: white;
 $color-link: #dcdcdc;
 $color-text-highlight: #fb0;
 $color-border: rgba(255,255,255,0.25);
+$color-overlay: rgba(0,0,0, 0.6);
+$color-video-bg: #333;
 
 $border-divider: 1px dotted $color-border;
 
@@ -186,7 +188,6 @@ body {
 
 .vw-social-sharing {
 	overflow: hidden;
-	margin: 0 2rem;
 
 	> li.vw-social-sharing-item {
 		margin-right: 0.5rem;
@@ -216,7 +217,7 @@ body {
 	margin: 0 auto;
 
 	@media (max-width: 739px) {
-		width: 100%;
+
 	}
 
 	@media (min-width: 740px) and (max-width: 979px) {
@@ -240,10 +241,18 @@ body {
 	}
 
 	&-constrained {
-		max-width: 70%;
+		margin: 0 12rem;
 
 		@media (max-width: 739px) {
-			max-width: 100%;
+			margin: 0 2rem;
+		}
+
+		@media (min-width: 740px) and (max-width: 979px) {
+			margin: 0 4rem;
+		}
+
+		@media (min-width: 980px) and (max-width: 1139px) {
+			margin: 0 6rem;
 		}
 	}
 
@@ -294,7 +303,6 @@ body {
 				font-size: 1rem;
 				line-height: 1.25rem;
 				font-weight: 200;
-				margin: 0 2rem;
 
 				a {
 					font-weight: 900;
@@ -311,7 +319,6 @@ body {
 				padding: 0.6rem 0 2rem;
 				border-bottom: $border-divider;
 				color: $color-title;
-				margin: 0 2rem;
 
 				.vw-icon {
 					path,
@@ -331,7 +338,7 @@ body {
 		&-count {
 			width: 6rem;
 			position: absolute;
-			right: 2rem;
+			right: 0;
 			top: 0;
 
 			small {
@@ -352,7 +359,7 @@ body {
 	&-standfirst {
 		p {
 			margin-top: 0;
-			margin-right: 12rem;
+			margin-right: 14rem;
 		}
 
 		&-supporter {
@@ -391,7 +398,7 @@ body {
 		@include aspect-ratio(16, 9);
 
 		&-inner {
-			background: blue;
+			background: $color-video-bg;
 			display: block;
 			overflow: hidden;
 		}
@@ -435,14 +442,108 @@ body {
 			overflow: hidden;
 			z-index: 1;
 			text-align: center;
+			background: $color-overlay;
+		}
+
+		@media (max-width: 739px) {
+			width: 100%;
+		}
+
+		@media (min-width: 740px) and (max-width: 979px) {
+			width: 50%;
 		}
 	}
 
-	> div:nth-child(1),
-	> div:nth-child(2),
-	> div:nth-child(3) {
-		.inner {
-			top: 0;
+	@media (max-width: 739px) {
+		> div {
+			left: 0;
+			right: 0;
+		}
+
+		> div:first-of-type {
+			.inner {
+				top: 0;
+			}
+		}
+
+		> div:last-of-type {
+			.inner {
+				bottom: 0;
+			}
+		}
+	}
+
+	@media (min-width: 740px) and (max-width: 979px) {
+		> div:nth-child(1),
+		> div:nth-child(2) {
+			.inner {
+				top: 0;
+			}
+		}
+
+		> div:nth-child(3) {
+			.inner {
+				left: 0;
+			}
+		}
+
+		> div:nth-child(2) {
+			.inner {
+				right: 0;
+			}
+		}
+
+		> div:nth-last-child(1),
+		> div:nth-last-child(2) {
+			.inner {
+				bottom: 0;
+			}
+
+			&:after {
+				content: "";
+				display: block;
+				width: 100%;
+				height: 0;
+				border: 0;
+			}
+		}
+	}
+
+	@media (min-width: 980px) {
+		> div:nth-child(1),
+		> div:nth-child(2),
+		> div:nth-child(3) {
+			.inner {
+				top: 0;
+			}
+		}
+
+		> div:nth-child(4) {
+			.inner {
+				left: 0;
+			}
+		}
+
+		> div:nth-child(3) {
+			.inner {
+				right: 0;
+			}
+		}
+
+		> div:nth-last-child(1),
+		> div:nth-last-child(2),
+		> div:nth-last-child(3) {
+			.inner {
+				bottom: 0;
+			}
+
+			&:after {
+				content: "";
+				display: block;
+				width: 100%;
+				height: 0;
+				border: 0;
+			}
 		}
 	}
 
@@ -452,37 +553,9 @@ body {
 		}
 	}
 
-	> div:nth-child(4) {
-		.inner {
-			left: 0;
-		}
-	}
-
-	> div:nth-child(3) {
-		.inner {
-			right: 0;
-		}
-	}
-
 	> div:last-of-type {
 		.inner {
 			right: 0;
-		}
-	}
-
-	> div:nth-last-child(1),
-	> div:nth-last-child(2),
-	> div:nth-last-child(3) {
-		.inner {
-			bottom: 0;
-		}
-
-		&:after {
-			content: "";
-			display: block;
-			width: 100%;
-			height: 0;
-			border: 0;
 		}
 	}
 }
