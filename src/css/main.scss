@@ -72,6 +72,7 @@ $color-link: #dcdcdc;
 $color-text-highlight: #fb0;
 $color-border: rgba(255,255,255,0.25);
 $color-overlay: rgba(0,0,0, 0.6);
+$color-overlay-active: rgba(0,0,0,0.4);
 $color-video-bg: #333;
 
 $border-divider: 1px dotted $color-border;
@@ -85,14 +86,6 @@ $border-divider: 1px dotted $color-border;
 		content: "";
 		width: 100%;
 		padding-top: ($height / $width) * 100%;
-	}
-	
-	> .inner {
-		position: absolute;
-		top: 1rem;
-		left: 1rem;
-		right: 1rem;
-		bottom: 1rem;
 	}
 }
 
@@ -213,7 +206,6 @@ body {
 /* Structure */
 .vw-container {
 	position: relative;
-	overflow: hidden;
 	margin: 0 auto;
 
 	@media (max-width: 739px) {
@@ -243,12 +235,8 @@ body {
 	&-constrained {
 		margin: 0 12rem;
 
-		@media (max-width: 739px) {
+		@media (max-width: 979px) {
 			margin: 0 2rem;
-		}
-
-		@media (min-width: 740px) and (max-width: 979px) {
-			margin: 0 4rem;
 		}
 
 		@media (min-width: 980px) and (max-width: 1139px) {
@@ -269,8 +257,6 @@ body {
 
 /* Header */
 .vw-header {
-	padding-bottom: 5rem;
-
 	&-banner {
 		&-media {
 			height: 100vh;
@@ -389,7 +375,7 @@ body {
 
 .vw-video-tiles {
 	overflow: hidden;
-	margin: 0 2rem;
+	margin: 5rem 2rem;
 
 	&-item {
 		float: left;
@@ -401,6 +387,11 @@ body {
 			background: $color-video-bg;
 			display: block;
 			overflow: hidden;
+			position: absolute;
+			top: 1rem;
+			left: 1rem;
+			right: 1rem;
+			bottom: 1rem;
 		}
 
 		&:before {
@@ -443,6 +434,37 @@ body {
 			z-index: 1;
 			text-align: center;
 			background: $color-overlay;
+			transition: background 0.2s ease-in;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			transition: all 0.2s ease-in;
+
+			h2 {
+				margin: 0;
+				transition: all 0.2s ease-in;
+				font-size: 90%;
+			}
+
+			&-hover {
+				padding-top: 1rem;
+				height: 1px;
+				/*transform: translateY(30px);*/
+				opacity: 0;
+				transition: all 0.2s ease-in;
+			}
+		}
+
+		&:hover {
+			.vw-video-tiles-item-body {
+				background: $color-overlay-active;
+
+				&-hover {
+					height: auto;
+					opacity: 1;
+					/*transform: translateY(0);*/
+				}
+			}
 		}
 
 		@media (max-width: 739px) {
@@ -454,108 +476,103 @@ body {
 		}
 	}
 
-	@media (max-width: 739px) {
-		> div {
-			left: 0;
-			right: 0;
-		}
+	&-inner {
+		margin: 0 -1rem;
 
-		> div:first-of-type {
-			.inner {
-				top: 0;
+		@media (max-width: 739px) {
+			> div {
+				.inner {
+					left: 0;
+					right: 0;
+				}
+			}
+
+			> div:first-of-type {
+				.inner {
+					top: 0;
+				}
+			}
+
+			> div:last-of-type {
+				.inner {
+					bottom: 0;
+				}
 			}
 		}
 
-		> div:last-of-type {
-			.inner {
-				bottom: 0;
+		@media (min-width: 740px) and (max-width: 979px) {
+			> div:nth-child(1),
+			> div:nth-child(2) {
+				.inner {
+					top: 0;
+				}
 			}
-		}
-	}
 
-	@media (min-width: 740px) and (max-width: 979px) {
-		> div:nth-child(1),
-		> div:nth-child(2) {
-			.inner {
-				top: 0;
-			}
-		}
+			> div:nth-last-child(1),
+			> div:nth-last-child(2) {
+				.inner {
+					bottom: 0;
+				}
 
-		> div:nth-child(3) {
-			.inner {
-				left: 0;
-			}
-		}
-
-		> div:nth-child(2) {
-			.inner {
-				right: 0;
+				&:after {
+					content: "";
+					display: block;
+					width: 100%;
+					height: 0;
+					border: 0;
+				}
 			}
 		}
 
-		> div:nth-last-child(1),
-		> div:nth-last-child(2) {
-			.inner {
-				bottom: 0;
+		@media (min-width: 980px) {
+			> div:nth-child(1),
+			> div:nth-child(2),
+			> div:nth-child(3) {
+				.inner {
+					top: 0;
+				}
 			}
 
-			&:after {
-				content: "";
-				display: block;
-				width: 100%;
-				height: 0;
-				border: 0;
-			}
-		}
-	}
-
-	@media (min-width: 980px) {
-		> div:nth-child(1),
-		> div:nth-child(2),
-		> div:nth-child(3) {
-			.inner {
-				top: 0;
-			}
-		}
-
-		> div:nth-child(4) {
-			.inner {
-				left: 0;
-			}
-		}
-
-		> div:nth-child(3) {
-			.inner {
-				right: 0;
-			}
-		}
-
-		> div:nth-last-child(1),
-		> div:nth-last-child(2),
-		> div:nth-last-child(3) {
-			.inner {
-				bottom: 0;
+			> div:nth-child(3) {
+				&:before {
+					border-right: 0;
+				}
 			}
 
-			&:after {
-				content: "";
-				display: block;
-				width: 100%;
-				height: 0;
-				border: 0;
+			> div:nth-last-child(1),
+			> div:nth-last-child(2),
+			> div:nth-last-child(3) {
+				.inner {
+					bottom: 0;
+				}
+
+				&:after {
+					content: "";
+					display: block;
+					width: 100%;
+					height: 0;
+					border: 0;
+				}
+			}
+
+			> div:last-of-type {
+				&:before {
+					border-right: 0;
+				}
 			}
 		}
 	}
 
-	> div:first-of-type {
-		.inner {
-			left: 0;
-		}
-	}
 
-	> div:last-of-type {
-		.inner {
-			right: 0;
+	&.vw-video-tiles-featured {
+		div.vw-video-tiles-item {
+			&:first-of-type {
+				width: 66.66667%;
+
+				@media (max-width: 979px) {
+					width: 100%;
+				}
+			}
 		}
 	}
 }
@@ -566,6 +583,7 @@ body {
 		height: 4rem;
 		font-size: 0.5625rem;
 		position: relative;
+		margin: 0 auto;
 
 		&:before {
 			-moz-border-radius: 50%;
@@ -590,6 +608,102 @@ body {
 			-moz-transform: scale(0.99999);
 		}
 	}
+
+	&-duration {
+		margin-top: 1rem;
+		font-size: 1.125rem;
+		font-weight: 500;
+		color: $color-title;
+	}
+}
+
+/* Footer */
+.vw-footer {
+	padding-bottom: 5rem;
+	
+	&-title {
+		position: absolute;
+		top: 1rem;
+		left: -10rem;
+		width: 9rem;
+		margin-top: 0;
+		color: $color-title;
+
+		@media (max-width: 979px) {
+			position: static;
+			margin-top: 1rem;
+			width: auto;
+		}
+	}
+}
+
+/* Article Tiles */
+.vw-article-tiles {
+	overflow: hidden;
+	border-top: $border-divider;
+	border-bottom: $border-divider;
+	padding: 1rem 0;
+
+	&-item {
+		width: 25%;
+		float: left;
+
+		&-inner {
+			margin: 0 0.5rem;
+			display: block;
+			background: $color-video-bg;
+			border-top: 1px solid $color-text-highlight;
+		}
+
+		&:before {
+			border-right: $border-divider;
+		}
+
+		&-media {
+			overflow: hidden;
+			z-index: 0;
+			@include aspect-ratio(16, 9);
+
+			img {
+				object-fit: cover;
+				position: absolute;
+				top: 0;
+				height: 100%;
+				width: 100%;
+			}
+		}
+	}
+
+	&-inner {
+		margin: 0 -0.5rem;
+
+		> div.vw-article-tiles-item {
+			.inner {
+				top: 0;
+				bottom: 0;
+				left: 0.5rem;
+				right: 0.5rem;
+			}
+
+			&:first-of-type {
+				.inner {
+					left: 0;
+				}
+			}
+
+			&:last-of-type {
+				.inner {
+					right: 0;
+				}
+			}
+		}
+	}
+}
+
+/* Modal */
+
+.vw-modal {
+	display: none;
 }
 
 /* Breakpoints */

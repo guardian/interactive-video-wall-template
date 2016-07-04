@@ -233,7 +233,19 @@ module.exports = function(grunt) {
             ]
         }
     },
-
+    postcss: {
+        options: {
+            map: true,
+            processors: [
+                require('autoprefixer')({
+                    browsers: ['last 2 versions']
+                })
+            ]
+        },
+        dist: {
+            src: 'build/css/**/*.css'
+        }
+    }
   });
 
   // Task pluginsk
@@ -251,6 +263,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-rename');
   grunt.loadNpmTasks('grunt-bower-requirejs');
   grunt.loadNpmTasks('grunt-newer');
+  grunt.loadNpmTasks('grunt-postcss');
 
   // Tasks
   grunt.registerTask('build', [
@@ -274,6 +287,7 @@ module.exports = function(grunt) {
   grunt.registerTask('deploy', [
       'build',
       'rename',
-      'replace:prod'
+      'replace:prod',
+      'postcss:dist'
   ]);
 };
