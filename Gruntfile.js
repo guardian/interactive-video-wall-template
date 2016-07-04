@@ -286,8 +286,8 @@ module.exports = function(grunt) {
   
   grunt.registerTask('deploy', [
       'build',
+      'postcss:dist',
       'rename',
-      'replace:prod',
-      'postcss:dist'
+      'replace:prod'
   ]);
 };

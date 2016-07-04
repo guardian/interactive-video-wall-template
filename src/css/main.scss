@@ -71,8 +71,8 @@ $color-title: white;
 $color-link: #dcdcdc;
 $color-text-highlight: #fb0;
 $color-border: rgba(255,255,255,0.25);
-$color-overlay: rgba(0,0,0, 0.6);
-$color-overlay-active: rgba(0,0,0,0.4);
+$color-overlay: rgba(0,0,0, 0.5);
+$color-overlay-active: rgba(0,0,0,0.25);
 $color-video-bg: #333;
 
 $border-divider: 1px dotted $color-border;
@@ -97,9 +97,14 @@ body {
 	margin: 0;
 	padding: 0;
 
-	figure {
+	header#header {
+		z-index: 1;
+	}
+
+	figure.element.element-interactive.interactive {
 		margin: 0;
 		padding: 0;
+		margin-top: -48px;
 	}
 }
 
@@ -121,6 +126,11 @@ body {
 		border: 0;
 		border-top: $border-divider;
 		max-width: 5rem;
+	}
+
+	figure {
+		margin: 0;
+		padding: 0;
 	}
 }
 
@@ -230,12 +240,18 @@ body {
 
 	&-fluid {
 		width: 100%;
+		position: relative;
 	}
 
 	&-constrained {
 		margin: 0 12rem;
+		position: relative;
 
-		@media (max-width: 979px) {
+		@media (max-width: 739px) {
+			margin: 0 1rem;
+		}
+
+		@media (min-width: 740px) and (max-width: 979px) {
 			margin: 0 2rem;
 		}
 
@@ -258,6 +274,8 @@ body {
 /* Header */
 .vw-header {
 	&-banner {
+		position: relative;
+		
 		&-media {
 			height: 100vh;
 			position: relative;
@@ -346,6 +364,10 @@ body {
 		p {
 			margin-top: 0;
 			margin-right: 14rem;
+
+			@media (max-width: 739px) {
+				margin-right: 0;
+			}
 		}
 
 		&-supporter {
@@ -368,6 +390,32 @@ body {
 				}
 			}
 		}
+
+		&-footer {
+			@media (max-width: 739px) {
+				overflow: hidden;
+				position: relative;
+				border-top: $border-divider;
+				padding: 1.5rem 0 0;
+				margin: 2.5rem 0 0 ;
+
+				hr {
+					display: none;
+				}
+
+				p {
+					display: block;
+					max-width: 50%;
+					float: left;
+				}
+
+				.vw-header-standfirst-supporter {
+					position: relative;
+					float: right;
+					margin-top: -0.5rem;
+				}
+			}
+		}
 	}
 }
 
@@ -376,6 +424,10 @@ body {
 .vw-video-tiles {
 	overflow: hidden;
 	margin: 5rem 2rem;
+
+	@media (max-width: 739px) {
+		margin: 5rem 1rem;
+	}
 
 	&-item {
 		float: left;
@@ -401,6 +453,8 @@ body {
 		&:after {
 			content: "";
 			display: block;
+			/*position: absolute;
+			bottom: 0;*/
 			width: 100%;
 			height: 0;
 			border-top: $border-divider;
@@ -442,14 +496,14 @@ body {
 
 			h2 {
 				margin: 0;
+				transform: translateY(0px);
 				transition: all 0.2s ease-in;
 				font-size: 90%;
 			}
 
 			&-hover {
-				padding-top: 1rem;
-				height: 1px;
-				/*transform: translateY(30px);*/
+				height: 0px;
+				transform: translateY(20px);
 				opacity: 0;
 				transition: all 0.2s ease-in;
 			}
@@ -459,10 +513,13 @@ body {
 			.vw-video-tiles-item-body {
 				background: $color-overlay-active;
 
+				h2 {
+					transform: translateY(-60px);
+				}
+
 				&-hover {
-					height: auto;
 					opacity: 1;
-					/*transform: translateY(0);*/
+					transform: translateY(-40px);
 				}
 			}
 		}
@@ -533,12 +590,6 @@ body {
 				}
 			}
 
-			> div:nth-child(3) {
-				&:before {
-					border-right: 0;
-				}
-			}
-
 			> div:nth-last-child(1),
 			> div:nth-last-child(2),
 			> div:nth-last-child(3) {
@@ -569,8 +620,40 @@ body {
 			&:first-of-type {
 				width: 66.66667%;
 
+				&:before {
+					padding-bottom: 1.03rem;
+				}
+
 				@media (max-width: 979px) {
 					width: 100%;
+				}
+
+				.vw-video-tiles-item-body {
+					h2 {
+						font-size: 150%;
+					}
+				}
+			}
+
+			&:nth-child(3) {
+				.inner {
+					top: 1rem;
+				}
+
+				&:before {
+					padding-bottom: 1rem;
+				}
+			}
+		}
+
+		@media (min-width: 740px) and (max-width: 979px) {
+			div.vw-video-tiles-item:nth-child(2) {
+				.inner {
+					top: 1rem;
+				}
+
+				&:before {
+					padding-bottom: 1rem;
 				}
 			}
 		}
@@ -620,7 +703,7 @@ body {
 /* Footer */
 .vw-footer {
 	padding-bottom: 5rem;
-	
+
 	&-title {
 		position: absolute;
 		top: 1rem;
@@ -629,10 +712,45 @@ body {
 		margin-top: 0;
 		color: $color-title;
 
-		@media (max-width: 979px) {
+		@media (max-width: 739px) {
+			max-width: 75%;
+		}
+
+		@media (max-width: 1139px) {
 			position: static;
 			margin-top: 1rem;
 			width: auto;
+		}
+	}
+
+	&-branding {
+		padding-top: 2rem;
+		
+		p {
+			margin: 0;
+			font-family: $font-sans-serif;
+			font-size: 90%;
+		}
+
+		&-logo {
+			max-width: 12rem;
+			float: right;
+
+			@media (max-width: 739px) {
+				float: none;
+				margin: 1rem 0 2rem;
+			}
+
+			path {
+				fill: $color-title;
+			}
+		}
+	}
+
+	@media (max-width: 739px) {
+		.vw-container-left,
+		.vw-container-right {
+			width: 100%;
 		}
 	}
 }
@@ -647,16 +765,29 @@ body {
 	&-item {
 		width: 25%;
 		float: left;
+		display: flex;
+		position: relative;
 
 		&-inner {
 			margin: 0 0.5rem;
+			text-decoration: none;
 			display: block;
 			background: $color-video-bg;
 			border-top: 1px solid $color-text-highlight;
+			flex-grow: 1;
+		}
+
+		> a {
+			text-decoration: none;
 		}
 
 		&:before {
+			content: '';
 			border-right: $border-divider;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
 		}
 
 		&-media {
@@ -672,28 +803,58 @@ body {
 				width: 100%;
 			}
 		}
+
+		&-body {
+			padding: 0.25rem 0.25rem 1rem;
+
+			h3 {
+				margin: 0 0 0.25rem;
+				font-size: 90%;
+			}
+		}
+
+		@media (max-width: 739px) {
+			width: 50%;
+
+			&-inner {
+				margin: 0.5rem;
+			}
+		}
 	}
 
 	&-inner {
 		margin: 0 -0.5rem;
+		display: flex;
+		flex-wrap: wrap;
 
 		> div.vw-article-tiles-item {
-			.inner {
-				top: 0;
+			&:after {
+				content: "";
+				display: block;
+				position: absolute;
 				bottom: 0;
-				left: 0.5rem;
-				right: 0.5rem;
+				width: 100%;
+				height: 0;
+				border-top: $border-divider;
+				left: 0;
+    			right: 0;
 			}
 
-			&:first-of-type {
-				.inner {
-					left: 0;
+			&:first-of-type,
+			&:nth-child(2) {
+				.vw-article-tiles-item-inner {
+					margin-top: 0;
 				}
 			}
 
-			&:last-of-type {
-				.inner {
-					right: 0;
+			&:last-of-type,
+			&:nth-last-child(2) {
+				.vw-article-tiles-item-inner {
+					margin-bottom: 0;
+				}
+
+				&:after {
+					display: none;
 				}
 			}
 		}
