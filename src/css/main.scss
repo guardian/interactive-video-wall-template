@@ -129,11 +129,6 @@ body {
 		border-top: $border-divider;
 		max-width: 5rem;
 	}
-
-	figure {
-		margin: 0;
-		padding: 0;
-	}
 }
 
 .vw-icon {
@@ -282,6 +277,7 @@ body {
 			height: 100vh;
 			position: relative;
 			z-index: 0;
+			margin: 0;
 
 			img {
 				object-fit: cover;
@@ -369,6 +365,7 @@ body {
 
 			@media (max-width: 739px) {
 				margin-right: 0;
+				margin: 0;
 			}
 		}
 
@@ -470,6 +467,7 @@ body {
 			bottom: 0;
 			overflow: hidden;
 			z-index: 0;
+			margin: 0;
 
 			img {
 				object-fit: cover;
@@ -721,16 +719,21 @@ body {
 	}
 }
 
+.media-primary.player {
+	position: relative;
+}
+
 .vw-video {
 	&-container {
 		position: relative;
-		@include aspect-ratio(16, 9);
+		overflow: hidden;
+		padding-bottom: 1rem;
+		margin: 0;
+		margin-bottom: 1rem;
+		border-bottom: $border-divider;
 
 		video {
 			width: 100%;
-			position: absolute;
-			top: 0;
-			object-fit: cover;
 		}
 	}
 
@@ -918,6 +921,7 @@ body {
 		&-media {
 			overflow: hidden;
 			z-index: 0;
+			margin: 0;
 			@include aspect-ratio(16, 9);
 
 			img {
@@ -926,6 +930,13 @@ body {
 				top: 0;
 				height: 100%;
 				width: 100%;
+			}
+
+			@media (max-width: 739px) {
+				width: 40%;
+				margin: 0.25rem;
+				flex-shrink: 0;
+				align-self: flex-start;
 			}
 		}
 
@@ -939,10 +950,12 @@ body {
 		}
 
 		@media (max-width: 739px) {
-			width: 50%;
+			width: 100%;
 
 			&-inner {
 				margin: 0.5rem;
+				display: flex;
+				flex-direction: row;
 			}
 		}
 	}
@@ -984,6 +997,10 @@ body {
 			}
 		}
 	}
+
+	@media (max-width: 739px) {
+		flex-direction: column;
+	}
 }
 
 /* Modal */
@@ -1000,9 +1017,28 @@ body.vw-modal-active {
 	right: 0;
 	bottom: 0;
 	background: $color-modal-bg;
+	overflow-y: auto;
 
 	&-title {
 		padding-bottom: 1rem;
+		overflow: hidden;
+
+		.vw-header-banner-body-title {
+			border-bottom: 0;
+			padding-bottom: 0;
+		}
+
+		.vw-social-sharing {
+			float: right;
+		}
+
+		.vw-container-left {
+			width: 70%;
+		}
+
+		.vw-container-right {
+			width: 30%;
+		}
 	}
 
 	&-inner {
@@ -1016,6 +1052,7 @@ body.vw-modal-active {
 
 	&-body {
 		overflow: hidden;
+		margin-right: 30%;
 	}
 
 	&-control {
