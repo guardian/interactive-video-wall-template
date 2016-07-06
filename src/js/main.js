@@ -13,6 +13,7 @@ define([
 
 		// DOM template example
 		el.innerHTML = templateHTML;
+		el.setAttribute('data-vw-interactive', '');
 
 		// Global variables
 		var DEBUG = true;
@@ -29,10 +30,10 @@ define([
 
 		var data = {};
 		var $body = $('body');
-		var $interactive = $('figure.element-interactive.interactive');
-		var $videoList = $('#vw-video-tiles-list .vw-video-tiles-inner');
-		var $articleList = $('#vw-article-tiles-list');
-		var $videoModal = $('#vw-video-modal');
+		var $interactive = $('[data-vw-interactive]');
+		var $videoList = $('[data-vw-video-tiles]');
+		var $articleList = $('[data-vw-article-tiles]');
+		var $videoModal = $('[data-vw-video-modal]');
 
 		var breakpoint = getBreakpoint();
 		if ( DEBUG ){
@@ -41,20 +42,26 @@ define([
 
 		// Load JSON data
 		if ( config.data ){
-			//data.main = loadData(config.data.main);
+			var main = loadData(config.data.main);
 			var videos = loadData(config.data.videos);
-			//data.articles = loadData(config.data.articles);
+			var articles = loadData(config.data.articles);
 			
 			// Data loaded?
-			$.when( videos ).done(function( data_videos ){
-				if ( data_videos ){
+			$.when( main, videos, articles ).done(function( data_main, data_videos, data_articles ){
+				if ( data_videos && data_articles ){
 					// Success, initiate page build
-					data.videos = data_videos.sheets.Sheet1;
+					data.videos = data_videos[0].sheets.Sheet1;
+					data.articles = data_articles[0].sheets.Sheet1;
 					populateVideoWall();
 				} else {
 					// Failed
 					console.log(DEBUG_msg);
 				}
+			}).fail(function(error1, error2, error3) {
+				console.log(error1);
+				console.log(error2);
+				console.log(error3);
+				console.log(DEBUG_msg);
 			});
 		}
 
@@ -64,16 +71,25 @@ define([
 			// Add the header and intro
 
 			// Loop through and add the videos
+			$videoList.data({
+				vwVideoTilesCount: data.videos.length,
+				vwVideoTilesLastIndex: (data.videos.length - 1)
+			});
+
 			for ( var v = 0; v < data.videos.length; v++ ){
+				if ( data.videos[v].type === 'featured' ){
+					$videoList.attr('data-vw-video-tiles-featured', '');
+				}
+
 				$videoList.append( videoTile(data.videos[v], v) );
 			}
 
 			// Loop through and add the articles
-			/*var articleCount = data.articles.length >= 4 ? 4 : data.articles.length;
+			var articleCount = data.articles.length >= 4 ? 4 : data.articles.length;
 
 			for ( var a = 0; a < articleCount; a++ ){
 				$articleList.append( articleTile(data.articles[a], a) );
-			}*/
+			}
 
 			// Add listeners
 			addVideoWallListeners();
@@ -81,32 +97,38 @@ define([
 
 		// Function: Add event listeners to the interactive
 		function addVideoWallListeners() {
-			$interactive.on('click', '[data-vw-video-item]', function(){
+			$interactive.on('click', '[data-vw-video-item]', function(e){
+				e.preventDefault();
 				var index = $(this).attr('data-vw-video-index');
-				toggleModal(index);
+				toggleModal(true, index);
 
 				if ( DEBUG ){
 					console.log(index);
 				}
 			});
 
-			$interactive.on('click', '[data-vw-modal-close]', function(){
-				toggleModal();
+			$interactive.on('click', '[data-vw-video-modal-close]', function(e){
+				e.preventDefault();
+				toggleModal(false);
 			});
 		}
 
 		// Function: Toggle video modal visibility
-		function toggleModal(index) {
-			if ( $body.attr('data-vw-modal-active') ){
-				$body.removeAttr('data-vw-modal-active');
-			} else {
+		function toggleModal(state, index) {
+			console.log($body.is('[data-vw-modal-active]'));
+
+			if ( state ){
+				populateModal(index);
 				$body.attr('data-vw-modal-active', '');
+			} else {
+				$body.removeAttr('data-vw-modal-active');
+				emptyModal();
 			}
 		}
 
 		// Function: Toggle video modal visibility
 		function emptyModal() {
-
+			console.log('empty');
 		}
 
 		// Function: Toggle video modal visibility
@@ -252,6 +274,11 @@ define([
 				cache: DEBUG ? false : true,
 				dataType: "json"
 			});
+
+			if ( DEBUG ){
+				console.log('Info: AJAX request for asset ' + key + '.');
+				console.log(request);
+			}
 
 			return request;
 		}

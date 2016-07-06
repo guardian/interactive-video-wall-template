@@ -32,7 +32,7 @@ define([], function() {
             		data: {
             			main: "test",
             			videos: "1322jBQ9h5wKPpfKAVGQSSh9d-EDBVvVx6M7O1c1-XNY",
-            			articles: "test"
+            			articles: "1n0___pxSaKJ7y8qSBfOHSba3MeLhhXJBMDb6UBXEc3M"
             		}
             	}
             };
