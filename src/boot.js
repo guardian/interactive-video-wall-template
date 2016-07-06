@@ -26,6 +26,17 @@ define([], function() {
             addCSS('@@assetPath@@/css/main.css');
             addCSS('//fonts.googleapis.com/css?family=Open+Sans:400,600,600italic,700,300');
 
+            // Interactive Config
+            window.videoWall = {
+            	config: {
+            		data: {
+            			main: "test",
+            			videos: "1322jBQ9h5wKPpfKAVGQSSh9d-EDBVvVx6M7O1c1-XNY",
+            			articles: "test"
+            		}
+            	}
+            };
+
             // Load main application
             require(['@@assetPath@@/js/main.js'], function(req){
                 // Main app returns a almond instance of require to avoid

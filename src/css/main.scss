@@ -1004,12 +1004,16 @@ body {
 }
 
 /* Modal */
-body.vw-modal-active {
+body[data-vw-modal-active] {
 	overflow: hidden;
+
+	.vw-modal {
+		display: block;
+	}
 }
 
 .vw-modal {
-	display: block;
+	display: none;
 	position: fixed;
 	z-index: 1000;
 	top: 0;
