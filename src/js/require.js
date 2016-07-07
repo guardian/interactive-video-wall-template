@@ -5,8 +5,10 @@ require.config({
   paths: {
     almond: "../../bower_components/almond/almond",
     curl: "../../bower_components/curl/src/curl",
-    "iframe-messenger": "../../bower_components/iframe-messenger/src/iframeMessenger",
-    ractive: "../../bower_components/ractive/ractive",
+    reqwest: "../../bower_components/reqwest/reqwest",
+    jquery: "../../bower_components/jquery/dist/jquery",
+    lodash: "../../bower_components/lodash/lodash",
+    text: "../../bower_components/text/text",
     async: "../../bower_components/requirejs-plugins/src/async",
     depend: "../../bower_components/requirejs-plugins/src/depend",
     font: "../../bower_components/requirejs-plugins/src/font",
@@ -16,10 +18,7 @@ require.config({
     mdown: "../../bower_components/requirejs-plugins/src/mdown",
     noext: "../../bower_components/requirejs-plugins/src/noext",
     propertyParser: "../../bower_components/requirejs-plugins/src/propertyParser",
-    "Markdown.Converter": "../../bower_components/requirejs-plugins/lib/Markdown.Converter",
-    text: "../../bower_components/text/text",
-    reqwest: "../../bower_components/reqwest/reqwest",
-    jquery: "../../bower_components/jquery/dist/jquery"
+    "Markdown.Converter": "../../bower_components/requirejs-plugins/lib/Markdown.Converter"
   },
   packages: [
 

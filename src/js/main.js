@@ -1,9 +1,11 @@
 define([
     'text!templates/appTemplate.html',
-    'jquery'
+    'jquery',
+    'lodash'
 ], function(
     templateHTML,
-    $
+    $,
+    _
 ) {
 	'use strict';
 
@@ -34,6 +36,8 @@ define([
 		var $videoList = $('[data-vw-video-tiles]');
 		var $articleList = $('[data-vw-article-tiles]');
 		var $videoModal = $('[data-vw-video-modal]');
+		var $videoWrapper = $('[data-vw-video-wrapper]');
+		var videojs = window.videojs;
 
 		var breakpoint = getBreakpoint();
 		if ( DEBUG ){
@@ -42,26 +46,35 @@ define([
 
 		// Load JSON data
 		if ( config.data ){
-			var main = loadData(config.data.main);
+			//var main = loadData(config.data.main);
 			var videos = loadData(config.data.videos);
 			var articles = loadData(config.data.articles);
 			
 			// Data loaded?
-			$.when( main, videos, articles ).done(function( data_main, data_videos, data_articles ){
+			$.when( videos, articles ).done(function( data_videos, data_articles ){
 				if ( data_videos && data_articles ){
+
 					// Success, initiate page build
 					data.videos = data_videos[0].sheets.Sheet1;
 					data.articles = data_articles[0].sheets.Sheet1;
 					populateVideoWall();
+
 				} else {
+					
 					// Failed
+					if ( DEBUG ){
+						console.log('Fatal Error: A data source request contained no data.');
+					}
 					console.log(DEBUG_msg);
+
 				}
-			}).fail(function(error1, error2, error3) {
-				console.log(error1);
-				console.log(error2);
-				console.log(error3);
+			}).fail(function(error) {
+				
+				if ( DEBUG ){
+					console.log('Fatal Error: An AJAX request resulted in a ' + error.status + ' ' + error.statusText + ' error.');
+				}
 				console.log(DEBUG_msg);
+
 			});
 		}
 
@@ -97,26 +110,66 @@ define([
 
 		// Function: Add event listeners to the interactive
 		function addVideoWallListeners() {
+			// Listen for window size changes and change responsive images
+			$(window).on('resize', _.debounce( function(){
+				var newBreakpoint = getBreakpoint();
+
+				if ( newBreakpoint !== breakpoint ){
+					breakpoint = newBreakpoint;
+
+					$interactive.find('[data-vw-responsive-img]').each(function(index){
+						responsiveImageSwitcher(
+							$(this), 
+							$(this).attr('data-vw-responsive-img-target'), 
+							$(this).attr('data-vw-responsive-img-mobile'), 
+							$(this).attr('data-vw-responsive-img-tablet'), 
+							$(this).attr('data-vw-responsive-img-desktop')
+						);
+					});
+
+					if ( DEBUG ){
+						console.log('Active breakpoint: ' + breakpoint);
+					}
+				}
+			}, 200 ));
+
+			// Listen for clicks on video item to launch modal
 			$interactive.on('click', '[data-vw-video-item]', function(e){
 				e.preventDefault();
 				var index = $(this).attr('data-vw-video-index');
 				toggleModal(true, index);
 
 				if ( DEBUG ){
-					console.log(index);
+					console.log('Info: video item at index ' + index + ' clicked.');
 				}
 			});
 
+			// Listen for clicks on modal close button
 			$interactive.on('click', '[data-vw-video-modal-close]', function(e){
 				e.preventDefault();
 				toggleModal(false);
+			});
+
+			// Listen for mouseover on video element
+			$interactive.on('mouseenter', '[data-vw-video-wrapper]', function(e){
+				e.preventDefault();
+				var timer;
+
+				$videoWrapper.addClass('vjs-mousemoved');
+
+				$(this).on('mousemove', _.throttle( function(){
+					clearTimeout(timer);
+					$videoWrapper.addClass('vjs-mousemoved');
+
+					timer = setTimeout(function(){
+						$videoWrapper.removeClass('vjs-mousemoved');
+					}, 2000);
+				}, 100));
 			});
 		}
 
 		// Function: Toggle video modal visibility
 		function toggleModal(state, index) {
-			console.log($body.is('[data-vw-modal-active]'));
-
 			if ( state ){
 				populateModal(index);
 				$body.attr('data-vw-modal-active', '');
@@ -128,14 +181,73 @@ define([
 
 		// Function: Toggle video modal visibility
 		function emptyModal() {
-			console.log('empty');
+			$videoWrapper.empty();
 		}
 
 		// Function: Toggle video modal visibility
 		function populateModal(index) {
 			var content = data.videos[index];
 
+			var images = imageOptions(
+				content['tile.img.mobile'] !== '' ? content['tile.img.mobile'] : false, 
+				content['tile.img.tablet'] !== '' ? content['tile.img.tablet'] : false, 
+				content['tile.img.desktop'] !== '' ? content['tile.img.desktop'] : false
+			);
+
 			if ( content ){
+				var html = '<video controls class="gu-media gu-media--show-controls-at-start gu-media--video js-gu-media--enhance" preload="none" id="vw-interactive-main-video"';
+
+					if ( images ){
+						html += 'poster="' + images.default + '" data-vw-responsive-img data-vw-responsive-img-target="poster" data-vw-responsive-img-mobile="' + images.mobile + '" data-vw-responsive-img-tablet="' + images.tablet + '" data-vw-responsive-img-desktop="' + images.desktop + '"';
+					} else {
+						if ( DEBUG ){
+							console.log('Info: POSTER attribute ommitted for VIDEO element of index ' + index + ' due to lack of image URLs.');
+						}
+					}
+
+					html += '>';
+					
+					if ( content['video.m3u8'] ){
+						html += '<source src="https://cdn.theguardian.tv/HLS/2016/07/05/070516obamahappybirthday.m3u8" type="video/m3u8"/>';
+					}
+					if ( content['video.mp4'] ){
+						html += '<source src="https://cdn.theguardian.tv/mainwebsite/2016/07/05/070516obamahappybirthday_desk.mp4" type="video/mp4"/>';
+					}
+					if ( content['video.mp4'] ){
+						html += '<source src="https://multimedia.guardianapis.com/interactivevideos/video.php?octopusid=11660445&amp;format=video/3gp&amp;maxwidth=700" type="video/3gp:small"/>';
+					}
+					if ( content['video.mp4'] ){
+						html += '<source src="https://cdn.theguardian.tv/3gp/large/2016/07/05/070516obamahappybirthday_large.3gp" type="video/3gp:large"/>';
+					}
+					if ( content['video.mp4'] ){
+						html += '<source src="https://cdn.theguardian.tv/webM/2016/07/05/070516obamahappybirthday_synd_768k_vp8.webm" type="video/webm"/>';
+					}
+					
+					html += '<object type="application/x-shockwave-flash" data="https://assets.guim.co.uk/flash/components/mediaelement/7c5b6df9c2993d7ed62d87361c4651f6/flashmediaelement-cdn.swf" width="640" height="640">';
+						html += '<param name="allowFullScreen" value="true"/>';
+						html += '<param name="movie" value="https://assets.guim.co.uk/flash/components/mediaelement/f70092081235f698081e268fecea95e4/flashmediaelement.swf"/>';
+						html += '<param name="flashvars" value="controls=true&file=https://cdn.theguardian.tv/mainwebsite/2016/07/05/070516obamahappybirthday_desk.mp4&poster=https://i.guim.co.uk/img/media/1e44490dee9f86b9ae86777a653c941ba64268de/0_153_3912_2348/3912.jpg?w=640&amp;h=360&amp;q=55&amp;auto=format&amp;usm=12&amp;fit=max&amp;s=0041a08eeed6b14444c38c6fc2ae676a"/>';
+						
+						if ( images ){
+							html += '<img src="' + images.default + '" alt="" width="640" height="640" data-vw-responsive-img data-vw-responsive-img-target="src" data-vw-responsive-img-mobile="' + images.mobile + '" data-vw-responsive-img-tablet="' + images.tablet + '" data-vw-responsive-img-desktop="' + images.desktop + '" />';
+						} else {
+							if ( DEBUG ){
+								console.log('Info: IMG element ommitted for VIDEO element of index ' + index + ' due to lack of image URLs.');
+							}
+						}
+
+						html += '<div class="vjs-error-display">';
+							html += '<div>Sorry, your browser is unable to play this video. <br/>Please install <a href="http://get.adobe.com/flashplayer/">Adobe Flash</a>™ and try again.	Alternatively <a href="http://whatbrowser.org/">upgrade</a> to a modern browser.</div>';
+						html += '</div>';
+					html += '</object>';
+				html += '</video>';
+
+				$videoWrapper.append(html);
+
+				console.log(videojs);
+
+				// RELIES ON GUARDIAN.COM USING VIDEO JS
+				videojs('#vw-interactive-main-video');
 
 			} else {
 				if ( DEBUG ){
@@ -155,100 +267,166 @@ define([
 				style = 'vw-video-tiles-item-featured';
 			}
 
-			var html = '<!-- VIDEO TILE -->'
-				+ '<div class="vw-video-tiles-item ' + style + '"'
+			var images = imageOptions(
+				content['tile.img.mobile'] !== '' ? content['tile.img.mobile'] : false, 
+				content['tile.img.tablet'] !== '' ? content['tile.img.tablet'] : false, 
+				content['tile.img.desktop'] !== '' ? content['tile.img.desktop'] : false
+			);
+
+			var html = '<!-- VIDEO TILE -->';
+				html += '<div class="vw-video-tiles-item ' + style + '"';
 					// Data attributes for the video modal
-					+ ' data-vw-video-item'
-					+ ' data-vw-video-id="' + content.id + '"'
-					+ ' data-vw-video-index="' + index + '"'
-				+'>'
-					+ '<a href="#" class="vw-video-tiles-item-inner inner">'
-						+ '<figure class="vw-video-tiles-item-media">'
-							+ '<img src="' + responsiveImage(content['tile.img.mobile'], content['tile.img.tablet'], content['tile.img.desktop']) + '" alt="" />'
-						+ '</figure>'
-						+ '<div class="vw-video-tiles-item-body">'
-							+ '<h2>' + content.title + '</h2>'
-							+ '<div class="vw-video-tiles-item-body-hover">';
+					html += ' data-vw-video-item';
+					html += ' data-vw-video-id="' + content.id + '"';
+					html += ' data-vw-video-index="' + index + '"';
+				html +='>';
+					html += '<a href="#" class="vw-video-tiles-item-inner inner">';
+						html += '<figure class="vw-video-tiles-item-media">';
+
+						if ( images ){
+							html += '<img src="' + images.default + '" alt="" data-vw-responsive-img data-vw-responsive-img-target="src" data-vw-responsive-img-mobile="' + images.mobile + '" data-vw-responsive-img-tablet="' + images.tablet + '" data-vw-responsive-img-desktop="' + images.desktop + '" />';
+						} else {
+							if ( DEBUG ){
+								console.log('Info: IMG element ommitted for video at index ' + index + ' due to lack of image URLs.');
+							}
+						}
+
+						html += '</figure>';
+						html += '<div class="vw-video-tiles-item-body">';
+							html += '<h2>' + content.title + '</h2>';
+							html += '<div class="vw-video-tiles-item-body-hover">';
 
 							// Insert play button or coming soon text
 							if ( content.type === 'placeholder' ){
-								html += '<div class="vw-video-soon">coming soon</div>'
+								html += '<div class="vw-video-soon">coming soon</div>';
 							} else {
-								html += '<div class="vw-video-button-play"></div>'
-								+ '<div class="vw-video-duration">' + content['video.duration'] + '</div>';
+								html += '<div class="vw-video-button-play"></div>';
+								html += '<div class="vw-video-duration">' + content['video.duration'] + '</div>';
 							}
 
-							html += '</div>'
-						+ '</div>'
-					+ '</a>'
-				+ '</div>'
-				+ '<!-- VIDEO TILE END -->';
+							html += '</div>';
+						html += '</div>';
+					html += '</a>';
+				html += '</div>';
+				html += '<!-- VIDEO TILE END -->';
 
 			return html;
 		}
 
 		// Function: Article tile item
 		function articleTile(content, index) {
-			var html = '<!-- FOOTER ARTICLE ITEM -->'
-				+ '<div class="vw-article-tiles-item">'
-					+ '<a href="' + content.url + '" class="vw-article-tiles-item-inner inner">'
-						+ '<figure class="vw-article-tiles-item-media">'
-							+ '<img src="' + responsiveImage(content['tile.img.mobile'], content['tile.img.tablet'], content['tile.img.desktop']) + '" alt="' + content.title + '" />'
-						+ '</figure>'
-						+ '<div class="vw-article-tiles-item-body">'
-							+ '<h3>' + content.title + '</h3>'
-						+ '</div>'
-					+ '</a>'
-				+ '</div>'
-				+ '<!-- FOOTER ARTICLE ITEM END -->';
+			var images = imageOptions(
+				content['tile.img.mobile'] !== '' ? content['tile.img.mobile'] : false, 
+				content['tile.img.tablet'] !== '' ? content['tile.img.tablet'] : false, 
+				content['tile.img.desktop'] !== '' ? content['tile.img.desktop'] : false
+			);
+
+			var html = '<!-- FOOTER ARTICLE ITEM -->';
+				html += '<div class="vw-article-tiles-item">';
+					html += '<a href="' + content.url + '" class="vw-article-tiles-item-inner inner">';
+						html += '<figure class="vw-article-tiles-item-media">';
+							
+						if ( images ){
+							html += '<img src="' + images.default + '" alt="" data-vw-responsive-img data-vw-responsive-img-target="src" data-vw-responsive-img-mobile="' + images.mobile + '" data-vw-responsive-img-tablet="' + images.tablet + '" data-vw-responsive-img-desktop="' + images.desktop + '" />';
+						} else {
+							if ( DEBUG ){
+								console.log('Info: IMG element ommitted for article at index ' + index + ' due to lack of image URLs.');
+							}
+						}
+
+						html += '</figure>';
+						html += '<div class="vw-article-tiles-item-body">';
+							html += '<h3>' + content.title + '</h3>';
+						html += '</div>';
+					html += '</a>';
+				html += '</div>';
+				html += '<!-- FOOTER ARTICLE ITEM END -->';
 
 			return html;
 		}
 
-		// Function: Load an image based on the current breakpoint size
-		function responsiveImage(mobile, tablet, desktop) {
-			if ( breakpoint === 'mobile' ){
-				if ( mobile ){
-					return mobile;
-				} else if ( tablet ){
-					if ( DEBUG ){
-						console.log('Info: Mobile image is undefined, loading Mobile');
-					}
-					return tablet;
-				} else if ( desktop ){
-					if ( DEBUG ){
-						console.log('Info: Tablet image is undefined, loading Desktop');
-					}
-					return desktop;
-				} else {
-					if ( DEBUG ){
-						console.log('Error: Desktop image is undefined');
-					}
+		// Function: Determines what images have been provided and makes them available
+		function imageOptions(mobile, tablet, desktop) {
+			var def, mob, tab, desk;
+
+			// Mobile image
+			if ( mobile ){
+				mob = mobile;
+
+				if ( !tablet ){
+					tab = mobile;
 				}
-			} else if ( breakpoint === 'tablet' ){
-				if ( tablet ){
-					return tablet;
-				} else if ( desktop ){
-					if ( DEBUG ){
-						console.log('Info: Tablet image is undefined, loading Desktop');
-					}
-					return desktop;
-				} else {
-					if ( DEBUG ){
-						console.log('Error: Desktop image is undefined');
-					}
-				}
-			} else {
-				if ( desktop ){
-					return desktop;
-				} else {
-					if ( DEBUG ){
-						console.log('Error: Desktop image is undefined');
-					}
+
+				if ( !desktop ){
+					desk = mobile;
 				}
 			}
 
-			return;
+			// Tablet image
+			if ( tablet ){
+				tab = tablet;
+
+				if ( !mobile ){
+					mob = tablet;
+				}
+
+				if ( !desktop ){
+					desk = tablet;
+				}
+			}
+
+			// Desktop image
+			if ( desktop ){
+				desk = desktop;
+
+				if ( !mobile ){
+					mob = desktop;
+				}
+
+				if ( !tablet ){
+					tab = desktop;
+				}
+			}
+
+			// No images?
+			if ( !mobile && !tablet && !desktop ){
+				if ( DEBUG ){
+					console.log('Error: No valid image URLs were provided to imageOptions.');
+				}
+
+				return false;
+			}
+
+			// Set default image
+			if ( breakpoint === 'mobile' ){
+				def = mob;
+			} else if ( breakpoint === 'tablet' ){
+				def = tab;
+			} else if ( breakpoint === 'desktop' ){
+				def = desk;
+			}
+
+			return {
+				default: def,
+				mobile: mob,
+				tablet: tab,
+				desktop: desk
+			};
+		}
+
+		// Function: Load an image based on the current breakpoint size
+		function responsiveImageSwitcher($this, target, mobile, tablet, desktop) {
+			if ( breakpoint === 'mobile' ){
+				$this.attr(target, mobile);
+			} else if ( breakpoint === 'tablet' ){
+				$this.attr(target, tablet);
+			} else if ( breakpoint === 'desktop' ){
+				$this.attr(target, desktop);
+			} else {
+				if ( DEBUG ){
+					console.log('Error: An unknown breakpoint value was provided to responsiveImageSwitcher.');
+				}
+			}
 		}
 
 		// Function: Detect the current breakpoint

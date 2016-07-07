@@ -735,6 +735,12 @@ body {
 		video {
 			width: 100%;
 		}
+
+		[data-vw-video-wrapper] {
+			&.vjs-mousemoved {
+				border: 2px solid red;
+			}
+		}
 	}
 
 	&-button-play {

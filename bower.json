@@ -15,7 +15,8 @@
     "jquery": "~2.1.4",
     "requirejs-plugins": "1.0.3",
     "reqwest": "~1.1.5",
-    "text": "2.0.10"
+    "text": "2.0.10",
+    "lodash": "^4.13.1"
   },
   "devDependencies": {
     "guss-webfonts": "^4.0.1"
