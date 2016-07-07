@@ -18,7 +18,8 @@ require.config({
     mdown: "../../bower_components/requirejs-plugins/src/mdown",
     noext: "../../bower_components/requirejs-plugins/src/noext",
     propertyParser: "../../bower_components/requirejs-plugins/src/propertyParser",
-    "Markdown.Converter": "../../bower_components/requirejs-plugins/lib/Markdown.Converter"
+    "Markdown.Converter": "../../bower_components/requirejs-plugins/lib/Markdown.Converter",
+    video: "../../bower_components/video.js/dist/video"
   },
   packages: [
 

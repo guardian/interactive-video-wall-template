@@ -75,6 +75,7 @@ $color-overlay: rgba(0,0,0, 0.6);
 $color-overlay-active: rgba(0,0,0,0.35);
 $color-modal-bg: rgba(0,0,0, 0.9);
 $color-video-bg: #333;
+$color-button-active: #767676;
 
 $border-divider: 1px dotted $color-border;
 
@@ -206,6 +207,11 @@ body {
 			border: 1px solid $color-border;
 			width: 2.4rem;
 			height: 2.4rem;
+			transition: 0.2s border linear;
+
+			&:hover {
+				border: 1px solid $color-title;
+			}
 		}
 	}
 }
@@ -736,7 +742,6 @@ body {
 		padding-bottom: 0;
 		margin: 0;
 		margin-bottom: 1rem;
-		border-bottom: $border-divider;
 
 		#vw-interactive-main-video {
 			width: 100% !important;
@@ -976,38 +981,6 @@ body {
 		margin: 0 -0.5rem;
 		display: flex;
 		flex-wrap: wrap;
-
-		> div.vw-article-tiles-item {
-			&:after {
-				content: "";
-				display: block;
-				position: absolute;
-				bottom: 0;
-				width: 100%;
-				height: 0;
-				border-top: $border-divider;
-				left: 0;
-    			right: 0;
-			}
-
-			&:first-of-type,
-			&:nth-child(2) {
-				.vw-article-tiles-item-inner {
-					margin-top: 0;
-				}
-			}
-
-			&:last-of-type,
-			&:nth-last-child(2) {
-				.vw-article-tiles-item-inner {
-					margin-bottom: 0;
-				}
-
-				&:after {
-					display: none;
-				}
-			}
-		}
 	}
 
 	@media (max-width: 739px) {
@@ -1016,7 +989,7 @@ body {
 }
 
 /* Modal */
-body[data-vw-modal-active] {
+html[data-vw-modal-active] {
 	overflow: hidden;
 
 	.vw-modal {
@@ -1036,6 +1009,8 @@ body[data-vw-modal-active] {
 	overflow-y: auto;
 
 	&-title {
+		border-top: $border-divider;
+		padding-top: 1rem;
 		padding-bottom: 1rem;
 		overflow: hidden;
 
@@ -1059,7 +1034,7 @@ body[data-vw-modal-active] {
 
 	&-inner {
 		margin: 0 4rem;
-		padding: 2rem 0;
+		padding: 4rem 0;
 	}
 
 	&-pager {
@@ -1081,13 +1056,18 @@ body[data-vw-modal-active] {
 		background-color: $color-video-bg;
 		background-position: center;
 		background-repeat: no-repeat;
+		transition: 0.2s background linear;
+
+		&:hover {
+			background-color: $color-button-active;
+		}
 	}
 
 	&-close {
 		background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTcuNSA5TDEgMmwxLTEgNyA2LjVMMTYgMWwxIDEtNi41IDcgNi41IDctMSAxLTctNi41TDIgMTdsLTEtMSA2LjUtN3oiLz48L3N2Zz4=);
 		position: absolute;
 	    right: 0.625rem;
-	    top: 2rem;
+	    top: 4rem;
 	}
 
 	&-next {

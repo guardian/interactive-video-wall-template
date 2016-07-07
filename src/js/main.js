@@ -1,11 +1,13 @@
 define([
     'text!templates/appTemplate.html',
     'jquery',
-    'lodash'
+    'lodash',
+    'video'
 ], function(
     templateHTML,
     $,
-    _
+    _,
+    vjs
 ) {
 	'use strict';
 
@@ -30,13 +32,13 @@ define([
 				console.log(config);
 			}
 			var data = {};
+			var $html = $('html');
 			var $body = $('body');
 			var $interactive = $('[data-vw-interactive]');
 			var $videoList = $('[data-vw-video-tiles]');
 			var $articleList = $('[data-vw-article-tiles]');
 			var $videoModal = $('[data-vw-video-modal]');
 			var $videoWrapper = $('[data-vw-video-wrapper]');
-			var videojs = window.videojs;
 			var breakpoint = getBreakpoint();
 			if ( DEBUG ){
 				console.log('Active breakpoint: ' + breakpoint);
@@ -44,15 +46,16 @@ define([
 
 			// Load JSON data
 			if ( config.data ){
-				//var main = loadData(config.data.main);
+				var main = loadData(config.data.main);
 				var videos = loadData(config.data.videos);
 				var articles = loadData(config.data.articles);
 				
 				// Data loaded?
-				$.when( videos, articles ).done(function( data_videos, data_articles ){
-					if ( data_videos && data_articles ){
+				$.when( main, videos, articles ).done(function( data_main, data_videos, data_articles ){
+					if ( data_main && data_videos && data_articles ){
 
 						// Success, initiate page build
+						data.main = data_main[0].sheets.Sheet1[0];
 						data.videos = data_videos[0].sheets.Sheet1;
 						data.articles = data_articles[0].sheets.Sheet1;
 						populateVideoWall();
@@ -80,6 +83,30 @@ define([
 			// Function: Build the Video wall interactive
 			function populateVideoWall() {
 				// Add the header and intro
+				$('[data-vw-interactive-hub]').html(data.main['hub.name']).attr('href', data.main['hub.url']);
+				$('[data-vw-interactive-name]').html(data.main.name);
+				$('[data-vw-interactive-title]').html(data.main.title);
+				$('[data-vw-interactive-intro]').html(data.main.intro);
+				$('[data-vw-interactive-contributors]').html(data.main.contributors);
+				$('[data-vw-interactive-supporter-intro]').html(data.main['supporter.intro']);
+				$('[data-vw-interactive-supporter-img]').attr({
+					'src': data.main['supporter.img'],
+					'alt': data.main['supporter.name']
+				});
+				$('[data-vw-interactive-supporter-abouturl]').attr('href', data.main['supporter.abouturl']);
+				$('[data-vw-interactive-readmoretitle]').html(data.main.readmoretitle);
+				$('[data-vw-interactive-copyright]').html(data.main.copyright);
+
+				// Add sharing
+				var msg = data.main.twittermsg ? data.main.twittermsg : null;
+				var img = data.main.fbimg ? data.main.fbimg : null;
+
+				$('[data-vw-share-global] [data-vw-share]').each(function(){
+					var share = socialShare($(this).attr('data-vw-share-target'), null, img, msg);
+					$(this).attr('href', share);
+				});
+
+				loadShares();
 
 				// Loop through and add the videos
 				$videoList.data({
@@ -170,9 +197,9 @@ define([
 			function toggleModal(state, index) {
 				if ( state ){
 					populateModal(index);
-					$body.attr('data-vw-modal-active', '');
+					$html.attr('data-vw-modal-active', '');
 				} else {
-					$body.removeAttr('data-vw-modal-active');
+					$html.removeAttr('data-vw-modal-active');
 					emptyModal();
 				}
 			}
@@ -182,17 +209,34 @@ define([
 				$videoWrapper.empty();
 			}
 
+			// Function: Navigate videos in modal
+			function navigateModal() {
+
+			}
+
 			// Function: Toggle video modal visibility
 			function populateModal(index) {
 				var content = data.videos[index];
 
-				var images = imageOptions(
-					content['tile.img.mobile'] !== '' ? content['tile.img.mobile'] : false, 
-					content['tile.img.tablet'] !== '' ? content['tile.img.tablet'] : false, 
-					content['tile.img.desktop'] !== '' ? content['tile.img.desktop'] : false
-				);
-
 				if ( content ){
+					// Add the title and description
+					$('[data-vw-video-modal-title]').html(content.title);
+					$('[data-vw-video-modal-description]').html(content.description);
+
+					var msg = content.twittermsg ? content.twittermsg : null;
+					var img = content.fbimg ? content.fbimg : null;
+
+					$videoModal.find('[data-vw-share]').each(function(){
+						var share = socialShare($(this).attr('data-vw-share-target'), 'vid' + index, img, msg);
+						$(this).attr('href', share);
+					});
+
+					var images = imageOptions(
+						content['tile.img.mobile'] !== '' ? content['tile.img.mobile'] : false, 
+						content['tile.img.tablet'] !== '' ? content['tile.img.tablet'] : false, 
+						content['tile.img.desktop'] !== '' ? content['tile.img.desktop'] : false
+					);
+
 					var html = '<video controls class="gu-media gu-media--show-controls-at-start gu-media--video js-gu-media--enhance" preload="none" id="vw-interactive-main-video"';
 
 						if ( images ){
@@ -242,14 +286,20 @@ define([
 
 					$videoWrapper.append(html);
 
+					var videojs;
+					if ( !window.videojs ){
+						videojs = vjs;
+					} else {
+						// RELIES ON GUARDIAN.COM USING VIDEO JS
+						videojs = window.videojs;
+					}
 					console.log(videojs);
 
-					// RELIES ON GUARDIAN.COM USING VIDEO JS
 					videojs('#vw-interactive-main-video');
 
 				} else {
 					if ( DEBUG ){
-						console.log('Error: The requested video index was not found.');
+						console.log('Error: The requested video content index was not found.');
 					}
 					console.log(DEBUG_msg);
 				}
@@ -457,6 +507,57 @@ define([
 				}
 
 				return request;
+			}
+
+			// Function: Share content on socila media
+			function socialShare(target, item, img, msg) {
+				var url = window.location.href;
+				item = item ? '#' + item : '';
+
+				if ( target === 'twitter' ){
+					return 'https://twitter.com/intent/tweet?text=' + msg + '&url=' + url + item;
+				} else if ( target === 'facebook' ){
+					return 'https://www.facebook.com/dialog/share?app_id=180444840287&href=' + url + item + '&redirect_uri=' + url + item + '&picture=' + img;
+				} else {
+					// Failed
+					if ( DEBUG ){
+						console.log('Fatal Error: Unknown target for share link.');
+					}
+					console.log(DEBUG_msg);
+
+					return '';
+				}
+			}
+
+			// Function: Load the Facebook share count for the URL
+			function loadShares() {
+				//var url = 'https://graph.facebook.com/' + window.location.href;
+				var url = 'https://graph.facebook.com/http://www.theguardian.com/australia-news/2016/jul/07/mediscare-campaign-didnt-worry-my-electorate-says-christopher-pyne';
+
+				var request = $.ajax({
+					method: "GET",
+					url: url,
+					cache: DEBUG ? false : true,
+					dataType: "json"
+				}).done(function( response ){
+					// success
+					if ( response ){
+						$interactive.find('[data-vw-social-shares]').text(response.shares);
+					} else {
+						// Failed
+						if ( DEBUG ){
+							console.log('Fatal Error: A Facebook shares request contained no data.');
+						}
+						console.log(DEBUG_msg);
+					}
+				}).fail(function(error) {
+					
+					if ( DEBUG ){
+						console.log('Fatal Error: An AJAX request for Facebook shares resulted in a ' + error.status + ' ' + error.statusText + ' error.');
+					}
+					console.log(DEBUG_msg);
+
+				});
 			}
 		});
     }
