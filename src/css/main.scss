@@ -723,23 +723,29 @@ body {
 	position: relative;
 }
 
+.vjs-hidden,
+.vjs-remaining-time,
+.vjs-custom-control-spacer {
+	display: none;
+}
+
 .vw-video {
 	&-container {
 		position: relative;
 		overflow: hidden;
-		padding-bottom: 1rem;
+		padding-bottom: 0;
 		margin: 0;
 		margin-bottom: 1rem;
 		border-bottom: $border-divider;
 
-		video {
-			width: 100%;
+		#vw-interactive-main-video {
+			width: 100% !important;
+			height: auto !important;
+			line-height: 0 !important;
 		}
 
-		[data-vw-video-wrapper] {
-			&.vjs-mousemoved {
-				border: 2px solid red;
-			}
+		video {
+			width: 100%;
 		}
 	}
 
