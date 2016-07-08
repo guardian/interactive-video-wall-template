@@ -40,6 +40,8 @@ define([
 			var $videoModal = $('[data-vw-video-modal]');
 			var $videoWrapper = $('[data-vw-video-wrapper]');
 			var breakpoint = getBreakpoint();
+			var videojs;
+			var videoExists = false;
 			if ( DEBUG ){
 				console.log('Active breakpoint: ' + breakpoint);
 			}
@@ -109,18 +111,25 @@ define([
 				loadShares();
 
 				// Loop through and add the videos
-				$videoList.data({
-					vwVideoTilesCount: data.videos.length,
-					vwVideoTilesLastIndex: (data.videos.length - 1)
-				});
-
+				var videoCount = 0;
+				var lastIndex;
 				for ( var v = 0; v < data.videos.length; v++ ){
 					if ( data.videos[v].type === 'featured' ){
 						$videoList.attr('data-vw-video-tiles-featured', '');
 					}
 
+					if ( data.videos[v].type !== 'placeholder' ){
+						videoCount++;
+						lastIndex = v;
+					}
+
 					$videoList.append( videoTile(data.videos[v], v) );
 				}
+
+				$videoList.attr({
+					'data-vw-video-tiles-count': videoCount,
+					'data-vw-video-tiles-last-index': lastIndex
+				});
 
 				// Loop through and add the articles
 				var articleCount = data.articles.length >= 4 ? 4 : data.articles.length;
@@ -162,7 +171,7 @@ define([
 				$interactive.on('click', '[data-vw-video-item]', function(e){
 					e.preventDefault();
 					var index = $(this).attr('data-vw-video-index');
-					toggleModal(true, index);
+					toggleModal(true, parseFloat(index));
 
 					if ( DEBUG ){
 						console.log('Info: video item at index ' + index + ' clicked.');
@@ -173,6 +182,20 @@ define([
 				$interactive.on('click', '[data-vw-video-modal-close]', function(e){
 					e.preventDefault();
 					toggleModal(false);
+				});
+
+				// Listen for clicks on modal next button
+				$interactive.on('click', '[data-vw-video-modal-next]', function(e){
+					e.preventDefault();
+					var index = $(this).attr('data-vw-video-modal-target');
+					toggleModal(true, parseFloat(index));
+				});
+
+				// Listen for clicks on modal prev button
+				$interactive.on('click', '[data-vw-video-modal-prev]', function(e){
+					e.preventDefault();
+					var index = $(this).attr('data-vw-video-modal-target');
+					toggleModal(true, parseFloat(index));
 				});
 
 				// Listen for mouseover on video element
@@ -196,6 +219,7 @@ define([
 			// Function: Toggle video modal visibility
 			function toggleModal(state, index) {
 				if ( state ){
+					emptyModal();
 					populateModal(index);
 					$html.attr('data-vw-modal-active', '');
 				} else {
@@ -206,19 +230,61 @@ define([
 
 			// Function: Toggle video modal visibility
 			function emptyModal() {
-				$videoWrapper.empty();
-			}
+				if ( videoExists ){
+					if ( !videojs ){
+						if ( !window.videojs ){
+							videojs = vjs;
+						} else {
+							// RELIES ON GUARDIAN.COM USING VIDEO JS
+							videojs = window.videojs;
+						}
+					}
 
-			// Function: Navigate videos in modal
-			function navigateModal() {
+					videojs('#vw-interactive-main-video').dispose();
 
+					$videoWrapper.empty();
+
+					videoExists = false;
+				}
 			}
 
 			// Function: Toggle video modal visibility
 			function populateModal(index) {
 				var content = data.videos[index];
 
-				if ( content ){
+				if ( content && ( index >= 0 || index <= lastIndex ) ){
+					videoExists = true;
+
+					var $next = $videoModal.find('[data-vw-video-modal-next]');
+					var $prev = $videoModal.find('[data-vw-video-modal-prev]');
+					var lastIndex = parseFloat($videoList.attr('data-vw-video-tiles-last-index'));
+					var firstIndex = parseFloat($videoList.find('[data-vw-video-item][data-vw-video-index]').eq(0).attr('data-vw-video-index'));
+					var nextIndex = parseFloat($videoList.find('[data-vw-video-item]:eq(' + index + ')').nextAll('[data-vw-video-index]:first').attr('data-vw-video-index'));
+					var prevIndex = parseFloat($videoList.find('[data-vw-video-item]:eq(' + index + ')').prevAll('[data-vw-video-index]:first').attr('data-vw-video-index'));
+
+					$videoModal.removeAttr('data-vw-video-modal-hide-next');
+					$videoModal.removeAttr('data-vw-video-modal-hide-prev');
+
+					if ( index === lastIndex && index > firstIndex ){
+						console.log('state 1');
+						$videoModal.attr('data-vw-video-modal-hide-next', '');
+						$prev.attr('data-vw-video-modal-target', prevIndex);
+					} else if ( index === firstIndex && index < lastIndex ){
+						console.log('state 2');
+						$videoModal.attr('data-vw-video-modal-hide-prev', '');
+						$next.attr('data-vw-video-modal-target', nextIndex);
+					} else if ( index > firstIndex && index < lastIndex ){
+						console.log('state 3');
+						$next.attr('data-vw-video-modal-target', nextIndex);
+						$prev.attr('data-vw-video-modal-target', prevIndex);
+					} else {
+						console.log('state 4');
+						$videoModal.attr({
+							'data-vw-video-modal-hide-next': '',
+							'data-vw-video-modal-hide-prev': ''
+						});
+					}
+
 					// Add the title and description
 					$('[data-vw-video-modal-title]').html(content.title);
 					$('[data-vw-video-modal-description]').html(content.description);
@@ -286,14 +352,14 @@ define([
 
 					$videoWrapper.append(html);
 
-					var videojs;
-					if ( !window.videojs ){
-						videojs = vjs;
-					} else {
-						// RELIES ON GUARDIAN.COM USING VIDEO JS
-						videojs = window.videojs;
+					if ( !videojs ){
+						if ( !window.videojs ){
+							videojs = vjs;
+						} else {
+							// RELIES ON GUARDIAN.COM USING VIDEO JS
+							videojs = window.videojs;
+						}
 					}
-					console.log(videojs);
 
 					videojs('#vw-interactive-main-video');
 
@@ -323,12 +389,23 @@ define([
 
 				var html = '<!-- VIDEO TILE -->';
 					html += '<div class="vw-video-tiles-item ' + style + '"';
+
 						// Data attributes for the video modal
+						if ( content.type !== 'placeholder' ){
+							html += ' data-vw-video-index="' + index + '"';
+						}
+
 						html += ' data-vw-video-item';
 						html += ' data-vw-video-id="' + content.id + '"';
-						html += ' data-vw-video-index="' + index + '"';
+
 					html +='>';
-						html += '<a href="#" class="vw-video-tiles-item-inner inner">';
+
+						if ( content.type === 'placeholder' ){
+							html += '<div class="vw-video-tiles-item-inner inner">';
+						} else {
+							html += '<a href="#" class="vw-video-tiles-item-inner inner">';
+						}
+
 							html += '<figure class="vw-video-tiles-item-media">';
 
 							if ( images ){
@@ -354,7 +431,13 @@ define([
 
 								html += '</div>';
 							html += '</div>';
-						html += '</a>';
+
+						if ( content.type === 'placeholder' ){
+							html += '</div>';
+						} else {
+							html += '</a>';
+						}
+
 					html += '</div>';
 					html += '<!-- VIDEO TILE END -->';
 
