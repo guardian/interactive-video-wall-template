@@ -760,6 +760,11 @@ body {
 
 .media-primary.player {
 	position: relative;
+
+	@media (max-width: 979px) {
+		position: static;
+		order: 2;
+	}
 }
 
 .vjs-hidden,
@@ -1046,6 +1051,7 @@ html[data-vw-modal-active] {
 		padding-top: 1rem;
 		padding-bottom: 1rem;
 		overflow: hidden;
+		width: 100%;
 
 		.vw-header-banner-body-title {
 			border-bottom: 0;
@@ -1063,23 +1069,55 @@ html[data-vw-modal-active] {
 		.vw-container-right {
 			width: 30%;
 		}
+
+		@media (max-width: 979px) {
+			order: 1;
+			margin-top: 3rem;
+			padding-bottom: 2rem;
+		}
 	}
 
 	&-inner {
 		margin: 0 4rem;
 		padding: 4rem 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+
+		@media (max-width: 979px) {
+			margin: 0 1rem;
+			min-height: 100vh;
+			padding: 0;
+			overflow: hidden;
+		}
 	}
 
 	&-pager {
-
+		@media (max-width: 979px) {
+			position: absolute;
+			bottom: 2.5rem;
+			left: 1rem;
+			overflow: hidden;
+			display: flex;
+			flex-direction: row-reverse;
+			justify-content: flex-end;
+			border-top: $border-divider;
+			padding-top: 1rem;
+			right: 1rem;
+		}
 	}
 
 	&-body {
 		overflow: hidden;
 		margin-right: 30%;
+		width: 70%;
 
 		@media (max-width: 979px) {
 			margin-right: 0;
+			width: 100%;
+			margin-bottom: 8rem;
+			order: 3;
+			padding-top: 2rem;
 		}
 	}
 
@@ -1105,6 +1143,12 @@ html[data-vw-modal-active] {
 		position: absolute;
 	    right: 0.625rem;
 	    top: 4rem;
+
+	    @media (max-width: 979px) {
+	    	top: auto;
+	    	bottom: 2.5rem;
+	    	right: 1rem;
+	    }
 	}
 
 	&-next {
@@ -1113,6 +1157,11 @@ html[data-vw-modal-active] {
 		right: -3.375rem;
 		top: 50%;
 		margin-top: -1.375rem;
+
+		@media (max-width: 979px) {
+			margin: 0;
+			position: static;
+		}
 	}
 
 	&-prev {
@@ -1121,6 +1170,11 @@ html[data-vw-modal-active] {
 		left: -3.375rem;
 		top: 50%;
 		margin-top: -1.375rem;
+
+		@media (max-width: 979px) {
+			margin: 0 2rem 0 0;
+			position: static;
+		}
 	}
 
 	&[data-vw-video-modal-hide-next] {
