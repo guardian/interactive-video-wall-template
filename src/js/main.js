@@ -303,7 +303,7 @@ define([
 						content['tile.img.desktop'] !== '' ? content['tile.img.desktop'] : false
 					);
 
-					var html = '<video controls class="gu-media gu-media--show-controls-at-start gu-media--video js-gu-media--enhance" preload="none" id="vw-interactive-main-video"';
+					var html = '<video controls width="640" height="360" class="gu-media gu-media--show-controls-at-start gu-media--video js-gu-media--enhance" preload="none" id="vw-interactive-main-video"';
 
 						if ( images ){
 							html += 'poster="' + images.default + '" data-vw-responsive-img data-vw-responsive-img-target="poster" data-vw-responsive-img-mobile="' + images.mobile + '" data-vw-responsive-img-tablet="' + images.tablet + '" data-vw-responsive-img-desktop="' + images.desktop + '"';
@@ -337,7 +337,7 @@ define([
 							html += '<param name="flashvars" value="controls=true&file=https://cdn.theguardian.tv/mainwebsite/2016/07/05/070516obamahappybirthday_desk.mp4&poster=https://i.guim.co.uk/img/media/1e44490dee9f86b9ae86777a653c941ba64268de/0_153_3912_2348/3912.jpg?w=640&amp;h=360&amp;q=55&amp;auto=format&amp;usm=12&amp;fit=max&amp;s=0041a08eeed6b14444c38c6fc2ae676a"/>';
 							
 							if ( images ){
-								html += '<img src="' + images.default + '" alt="" width="640" height="640" data-vw-responsive-img data-vw-responsive-img-target="src" data-vw-responsive-img-mobile="' + images.mobile + '" data-vw-responsive-img-tablet="' + images.tablet + '" data-vw-responsive-img-desktop="' + images.desktop + '" />';
+								html += '<img src="' + images.default + '" alt="" width="640" height="360" data-vw-responsive-img data-vw-responsive-img-target="src" data-vw-responsive-img-mobile="' + images.mobile + '" data-vw-responsive-img-tablet="' + images.tablet + '" data-vw-responsive-img-desktop="' + images.desktop + '" />';
 							} else {
 								if ( DEBUG ){
 									console.log('Info: IMG element ommitted for VIDEO element of index ' + index + ' due to lack of image URLs.');
@@ -361,7 +361,9 @@ define([
 						}
 					}
 
-					videojs('#vw-interactive-main-video');
+					videojs('#vw-interactive-main-video', {}, function(){
+						this.volume(100);
+					});
 
 				} else {
 					if ( DEBUG ){

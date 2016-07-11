@@ -44,7 +44,7 @@ $guss-webfonts-kerning: 'on';
  */
 $guss-webfonts-version: '0.1.0';
 
-
+@import 'modules/_guardian-video';
 @import '../../bower_components/guss-webfonts/src/_webfonts';
 
 // Outputs @font-face rules for all the fonts licensed
@@ -334,6 +334,11 @@ body {
 						fill: $color-text-highlight;
 						color: $color-text-highlight;
 					}
+				}
+
+				@media (max-width: 739px) {
+					font-size: 1.85rem;
+					line-height: 2.1rem;
 				}
 			}
 		}
@@ -760,10 +765,12 @@ body {
 
 .media-primary.player {
 	position: relative;
+	margin-bottom: 1rem;
 
 	@media (max-width: 979px) {
 		position: static;
 		order: 2;
+		margin: 0;
 	}
 }
 
@@ -779,7 +786,6 @@ body {
 		overflow: hidden;
 		padding-bottom: 0;
 		margin: 0;
-		margin-bottom: 1rem;
 
 		#vw-interactive-main-video {
 			width: 100% !important;
@@ -789,6 +795,10 @@ body {
 
 		video {
 			width: 100%;
+		}
+
+		[data-vw-video-wrapper] {
+
 		}
 	}
 
@@ -1072,8 +1082,25 @@ html[data-vw-modal-active] {
 
 		@media (max-width: 979px) {
 			order: 1;
-			margin-top: 3rem;
+			margin-top: 6rem;
 			padding-bottom: 2rem;
+		}
+
+		@media (max-width: 739px) {
+			margin-top: 5rem;
+
+			.vw-container-left {
+				width: 100%;
+			}
+
+			.vw-container-right {
+				width: 100%;
+
+				.vw-social-sharing {
+					float: none;
+					margin: 1rem 0 0 0;
+				}
+			}
 		}
 	}
 
@@ -1095,15 +1122,17 @@ html[data-vw-modal-active] {
 	&-pager {
 		@media (max-width: 979px) {
 			position: absolute;
-			bottom: 2.5rem;
+			top: 2rem;
 			left: 1rem;
 			overflow: hidden;
 			display: flex;
 			flex-direction: row-reverse;
 			justify-content: flex-end;
-			border-top: $border-divider;
-			padding-top: 1rem;
 			right: 1rem;
+		}
+
+		@media (max-width: 739px) {
+			top: 1rem;
 		}
 	}
 
@@ -1115,9 +1144,9 @@ html[data-vw-modal-active] {
 		@media (max-width: 979px) {
 			margin-right: 0;
 			width: 100%;
-			margin-bottom: 8rem;
+			margin-bottom: 3rem;
 			order: 3;
-			padding-top: 2rem;
+			padding-top: 1rem;
 		}
 	}
 
@@ -1145,10 +1174,13 @@ html[data-vw-modal-active] {
 	    top: 4rem;
 
 	    @media (max-width: 979px) {
-	    	top: auto;
-	    	bottom: 2.5rem;
+	    	top: 2rem;
 	    	right: 1rem;
 	    }
+
+	    @media (max-width: 739px) {
+			top: 1rem;
+		}
 	}
 
 	&-next {
@@ -1172,7 +1204,7 @@ html[data-vw-modal-active] {
 		margin-top: -1.375rem;
 
 		@media (max-width: 979px) {
-			margin: 0 2rem 0 0;
+			margin: 0 1rem 0 0;
 			position: static;
 		}
 	}
