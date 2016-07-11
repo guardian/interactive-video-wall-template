@@ -56,6 +56,10 @@ body {
 		padding: 0;
 		margin-top: -48px;
 	}
+
+	article#article {
+		display: none !important;
+	}
 }
 
 .vw-interactive {
@@ -221,6 +225,15 @@ body {
 	}
 }
 
+/* Loading */
+.vw-loading {
+	display: none;
+	
+	&[data-vw-loading] {
+		display: block;
+	}
+}
+
 /* Header */
 .vw-header {
 	&-banner {
@@ -228,15 +241,27 @@ body {
 
 		&-media {
 			height: 100vh;
+			min-height: 720px;
+			width: 100%;
 			position: relative;
 			z-index: 0;
 			margin: 0;
+			overflow: hidden;
+
+			@media (max-width: 739px) {
+				min-height: 500px;
+			}
+
+			@media (min-width: 740px) and (max-width: 979px) {
+				min-height: 610px;	
+			}
 
 			img {
 				object-fit: cover;
 				position: absolute;
 				top: 0;
 				height: 100%;
+				min-width: 100%;
 				width: 100%;
 			}
 		}
@@ -738,6 +763,7 @@ body {
 			width: 100% !important;
 			height: auto !important;
 			line-height: 0;
+			@include aspect-ratio(16, 9);
 
 			> div,
 			> button {
@@ -747,6 +773,9 @@ body {
 
 		video {
 			width: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
 		}
 
 		[data-vw-video-wrapper] {
@@ -972,6 +1001,7 @@ body {
 
 		@media (max-width: 739px) {
 			width: 100%;
+			display: block;
 
 			&-inner {
 				margin: 0.5rem;
@@ -1047,10 +1077,12 @@ html[data-vw-modal-active] {
 
 			.vw-container-left {
 				width: 100%;
+				float: none;
 			}
 
 			.vw-container-right {
 				width: 100%;
+				float: none;
 
 				.vw-social-sharing {
 					float: none;

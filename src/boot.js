@@ -36,6 +36,15 @@ define([], function() {
             			main: "1okuaX6Gem9z5Vd3VqFcGHzxS5k0DFMhf9Mp1qpQJXb4",
             			videos: "1322jBQ9h5wKPpfKAVGQSSh9d-EDBVvVx6M7O1c1-XNY",
             			articles: "1n0___pxSaKJ7y8qSBfOHSba3MeLhhXJBMDb6UBXEc3M"
+            		},
+            		customHeader: {
+            			htmlFile: "",
+            			cssFiles: [
+            				""
+            			],
+            			scriptFiles: [
+            				""
+            			]
             		}
             	}
             };

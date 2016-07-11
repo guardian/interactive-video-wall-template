@@ -39,6 +39,7 @@ define([
 			var $articleList = $('[data-vw-article-tiles]');
 			var $videoModal = $('[data-vw-video-modal]');
 			var $videoWrapper = $('[data-vw-video-wrapper]');
+			var $loading = $('[data-vw-loading-overlay]');
 			var $player;
 			var breakpoint = getBreakpoint();
 			var videojs;
@@ -141,6 +142,13 @@ define([
 
 				// Add listeners
 				addVideoWallListeners();
+
+				// Remove loading overlay
+				setTimeout(function(){
+					$loading.fadeOut(600, function(){
+						$(this).removeAttr('data-vw-loading');
+					});
+				}, 2000);
 			}
 
 			// Function: Add event listeners to the interactive
@@ -202,18 +210,27 @@ define([
 				// Listen for mouseover on video element
 				$interactive.on('mouseenter', '[data-vw-video-wrapper] > div', function(e){
 					e.preventDefault();
+
 					var timer;
 
-					$(this).addClass('vjs-mousemoved');
-
-					$(this).on('mousemove', _.throttle( function(){
-						clearTimeout(timer);
+					if ( breakpoint === 'mobile' ){
 						$(this).addClass('vjs-mousemoved');
 
 						timer = setTimeout(function(){
 							$(this).removeClass('vjs-mousemoved');
 						}, 2000);
-					}, 100));
+					} else {
+						$(this).addClass('vjs-mousemoved');
+
+						$(this).on('mousemove', _.throttle( function(){
+							clearTimeout(timer);
+							$(this).addClass('vjs-mousemoved');
+
+							timer = setTimeout(function(){
+								$(this).removeClass('vjs-mousemoved');
+							}, 2000);
+						}, 100));
+					}
 				});
 			}
 
@@ -436,10 +453,10 @@ define([
 						} else {
 							this.pause();
 						}
-						e.stop();
+						e.preventDefault();
 					},
 					dblclick: function (e) {
-						e.stop();
+						e.preventDefault();
 						if (this.isFullscreen()) {
 							this.exitFullscreen();
 						} else {
@@ -727,6 +744,15 @@ define([
 					console.log(DEBUG_msg);
 
 				});
+			}
+
+			function addCSS(url) {
+				var head = document.querySelector('head');
+				var link = document.createElement('link');
+				link.setAttribute('rel', 'stylesheet');
+				link.setAttribute('type', 'text/css');
+				link.setAttribute('href', url);
+				head.appendChild(link);
 			}
 		});
     }
