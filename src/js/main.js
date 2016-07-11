@@ -39,6 +39,7 @@ define([
 			var $articleList = $('[data-vw-article-tiles]');
 			var $videoModal = $('[data-vw-video-modal]');
 			var $videoWrapper = $('[data-vw-video-wrapper]');
+			var $player;
 			var breakpoint = getBreakpoint();
 			var videojs;
 			var videoExists = false;
@@ -240,7 +241,8 @@ define([
 						}
 					}
 
-					videojs('#vw-interactive-main-video').dispose();
+					$player.dispose();
+					$player = null;
 
 					$videoWrapper.empty();
 
@@ -361,12 +363,14 @@ define([
 						}
 					}
 
-					var player = videojs('#vw-interactive-main-video', {
-						controls: true,
-						textTrackDisplay: false,
-						textTrackSettings: false,
-						controlBar: {
-							children: [
+					videojs.plugin('fullscreener', fullscreener);
+
+					$player = videojs('#vw-interactive-main-video', {
+						"controls": true,
+						"textTrackDisplay": false,
+						"textTrackSettings": false,
+						"controlBar": {
+							"children": [
 								'playToggle',
 								'currentTimeDisplay',
 								'timeDivider',
@@ -376,17 +380,24 @@ define([
 								'volumeMenuButton'
 							]
 						},
-						autoplay: false,
-						preload: 'metadata'
+						"autoplay": false,
+						"preload": 'metadata'
 					}, function(){
-						upgradeVideoPlayerAccessibility(player);
+						upgradeVideoPlayerAccessibility($player);
+						$player.fullscreener();
 
-						var vol = player.volume();
-						console.log(vol);
-						if (vol) {
-							player.volume(0);
-							player.volume(vol);
+						var vol = $player.volume();
+						if (window.videoWall.config.initialVolume) {
+							$player.volume(0);
+							$player.volume(window.videoWall.config.initialVolume);
+						} else {
+							$player.volume(0);
+							$player.volume(vol);
 						}
+
+						$player.on('volumechange', function(e){
+							window.videoWall.config.initialVolume = $player.volume();
+						});
 					});
 
 				} else {
@@ -397,10 +408,7 @@ define([
 				}
 			}
 
-			function initVideo() {
-
-			};
-
+			// Guardian Function: Making the video controls more accessible
 			function upgradeVideoPlayerAccessibility(player) {
 				// Set the video tech element to aria-hidden, and label the buttons in the videojs control bar.
 				// It doesn't matter what kind of tech this is, flash or html5.
@@ -416,6 +424,37 @@ define([
 				$('.vjs-play-control', player.el()).attr('aria-label', 'video play');
 				$('.vjs-mute-control', player.el()).attr('aria-label', 'video mute');
 				$('.vjs-fullscreen-control', player.el()).attr('aria-label', 'video fullscreen');
+			}
+
+			function fullscreener() {
+				var player = this,
+				clickbox = document.createElement('div'),
+				events = {
+					click: function (e) {
+						if (this.paused()) {
+							this.play();
+						} else {
+							this.pause();
+						}
+						e.stop();
+					},
+					dblclick: function (e) {
+						e.stop();
+						if (this.isFullscreen()) {
+							this.exitFullscreen();
+						} else {
+							this.requestFullscreen();
+						}
+					}
+				};
+
+				console.log(clickbox);
+
+				clickbox.className = 'vjs-fullscreen-clickbox';
+				$(player.el()).addClass('vjs').append(clickbox);
+
+				$(clickbox).on('click', events.click.bind(player));
+				$(clickbox).on('dblclick', events.dblclick.bind(player));
 			}
 
 			// Function: Video tile item

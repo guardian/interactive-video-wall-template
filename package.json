@@ -1,11 +1,10 @@
 {
-  "name": "lexus-interactive",
+  "name": "video-wall-template",
   "version": "0.0.1",
-  "description": "Guardian Commercial interactive project for Lexus.",
-  "main": "src/boot.js",
+  "description": "Video Wall Template for Guardian Australia.",
   "repository": {
     "type": "git",
-    "url": "http://ash.jonceski@stash.labs.theguardian.com/scm/com/lexus-interactive.git"
+    "url": "https://ashjonceski@bitbucket.org/ashjonceski/video-wall-template.git"
   },
   "author": "Ash Jonceski - Diced",
   "license": "Apache 2.0",

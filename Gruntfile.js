@@ -1,7 +1,7 @@
 'use strict';
 var pkg = require('./package.json');
 var currentTime = +new Date();
-var versionedAssetPath = 'assets';
+var versionedAssetPath = 'assets-' + currentTime;
 var CDN = '//interactive.guim.co.uk/';
 var deployAssetPath = CDN + pkg.config.s3_folder + versionedAssetPath;
 var localAssetPath = 'http://localhost:' + pkg.config.port + '/assets';
@@ -76,7 +76,7 @@ module.exports = function(grunt) {
         options: {
           baseUrl: './src/js/',
           mainConfigFile: './src/js/require.js',
-          optimize: 'uglify2',
+          optimize: (isDev) ? 'none' : 'uglify2',
           inlineText: true,
           name: 'almond',
           out: 'build/assets/js/main.js',
@@ -192,6 +192,8 @@ module.exports = function(grunt) {
 
     s3: {
         options: {
+        	accessKeyId: "<%= aws.accessKeyId %>",
+    		secretAccessKey: "<%= aws.secretAccessKey %>",
             access: 'public-read',
             bucket: 'gdn-cdn',
             maxOperations: 20,

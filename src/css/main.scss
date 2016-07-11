@@ -737,7 +737,12 @@ body {
 		#vw-interactive-main-video {
 			width: 100% !important;
 			height: auto !important;
-			line-height: 0 !important;
+			line-height: 0;
+
+			> div,
+			> button {
+				line-height: 1.5;
+			}
 		}
 
 		video {
@@ -755,6 +760,10 @@ body {
 		font-size: 0.5625rem;
 		position: relative;
 		margin: 0 auto;
+
+		@media (max-width: 739px) {
+			margin: 0 0;
+		}
 
 		&:before {
 			-moz-border-radius: 50%;
@@ -1080,6 +1089,7 @@ html[data-vw-modal-active] {
 
 		@media (max-width: 739px) {
 			top: 1rem;
+			-webkit-box-pack: start;
 		}
 	}
 
@@ -1119,6 +1129,7 @@ html[data-vw-modal-active] {
 		position: absolute;
 	    right: 0.625rem;
 	    top: 4rem;
+	    z-index: 1;
 
 	    @media (max-width: 979px) {
 	    	top: 2rem;

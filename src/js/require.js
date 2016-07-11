@@ -7,7 +7,6 @@ require.config({
     curl: "../../bower_components/curl/src/curl",
     reqwest: "../../bower_components/reqwest/reqwest",
     jquery: "../../bower_components/jquery/dist/jquery",
-    lodash: "../../bower_components/lodash/lodash",
     text: "../../bower_components/text/text",
     async: "../../bower_components/requirejs-plugins/src/async",
     depend: "../../bower_components/requirejs-plugins/src/depend",
@@ -19,7 +18,8 @@ require.config({
     noext: "../../bower_components/requirejs-plugins/src/noext",
     propertyParser: "../../bower_components/requirejs-plugins/src/propertyParser",
     "Markdown.Converter": "../../bower_components/requirejs-plugins/lib/Markdown.Converter",
-    video: "../../bower_components/video.js/dist/video"
+    video: "../../bower_components/video.js/dist/video",
+    lodash: "vendor/lodash.custom.min"
   },
   packages: [
 
