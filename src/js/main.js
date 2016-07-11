@@ -361,8 +361,32 @@ define([
 						}
 					}
 
-					videojs('#vw-interactive-main-video', {}, function(){
-						this.volume(100);
+					var player = videojs('#vw-interactive-main-video', {
+						controls: true,
+						textTrackDisplay: false,
+						textTrackSettings: false,
+						controlBar: {
+							children: [
+								'playToggle',
+								'currentTimeDisplay',
+								'timeDivider',
+								'durationDisplay',
+								'progressControl',
+								'fullscreenToggle',
+								'volumeMenuButton'
+							]
+						},
+						autoplay: false,
+						preload: 'metadata'
+					}, function(){
+						upgradeVideoPlayerAccessibility(player);
+
+						var vol = player.volume();
+						console.log(vol);
+						if (vol) {
+							player.volume(0);
+							player.volume(vol);
+						}
 					});
 
 				} else {
@@ -371,6 +395,27 @@ define([
 					}
 					console.log(DEBUG_msg);
 				}
+			}
+
+			function initVideo() {
+
+			};
+
+			function upgradeVideoPlayerAccessibility(player) {
+				// Set the video tech element to aria-hidden, and label the buttons in the videojs control bar.
+				// It doesn't matter what kind of tech this is, flash or html5.
+				$('.vjs-tech', player.el()).attr('aria-hidden', true);
+
+				// Hide superfluous controls, and label useful buttons.
+				$('.vjs-big-play-button', player.el()).attr('aria-hidden', true);
+				$('.vjs-current-time', player.el()).attr('aria-hidden', true);
+				$('.vjs-time-divider', player.el()).attr('aria-hidden', true);
+				$('.vjs-duration', player.el()).attr('aria-hidden', true);
+				$('.vjs-embed-button', player.el()).attr('aria-hidden', true);
+
+				$('.vjs-play-control', player.el()).attr('aria-label', 'video play');
+				$('.vjs-mute-control', player.el()).attr('aria-label', 'video mute');
+				$('.vjs-fullscreen-control', player.el()).attr('aria-label', 'video fullscreen');
 			}
 
 			// Function: Video tile item

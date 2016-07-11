@@ -17,9 +17,13 @@
     "reqwest": "~1.1.5",
     "text": "2.0.10",
     "lodash": "^4.13.1",
-    "video.js": "^5.10.7"
+    "video.js": "^5.10.7",
+    "guss": "^3.3.0"
   },
   "devDependencies": {
+    "guss-webfonts": "^4.0.1"
+  },
+  "resolutions": {
     "guss-webfonts": "^4.0.1"
   }
 }
