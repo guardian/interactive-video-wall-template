@@ -47,8 +47,9 @@ body {
 	padding: 0;
 	line-height: 1.5;
 
-	header#header {
-		z-index: 1;
+	header#header,
+	.top-banner-ad-container {
+		z-index: 300;
 	}
 
 	figure.element-interactive.interactive {

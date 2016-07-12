@@ -29,8 +29,8 @@ define([], function() {
             			articles: "1n0___pxSaKJ7y8qSBfOHSba3MeLhhXJBMDb6UBXEc3M"
             		},
             		customHeader: {
-            			cssFile: "custom/dearaustralia.css",
-            			scriptFile: "custom/dearaustralia.js"
+            			cssFile: "@@assetPath@@/custom/dearaustralia.css",
+            			scriptFile: "@@assetPath@@/custom/dearaustralia.js"
             		}
             	}
             };

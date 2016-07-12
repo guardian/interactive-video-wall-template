@@ -258,7 +258,7 @@ define([
 					if ( DEBUG ){
 						console.log('Info: Loading overlay removed.');
 					}
-				}, 2000);
+				}, 5000);
 			}
 
 			// Function: Add event listeners to the interactive

@@ -23,22 +23,22 @@
 	    var html;
 
 		if ( breakpoint !== 'mobile' ){
-			html = '<div data-vw-interactive-banner-insert class="vw-custom-banner" style="background-image:url(custom/dearaustralia-banner-large.jpg)">';
+			html = '<div data-vw-interactive-banner-insert class="vw-custom-banner" style="background-image:url(@@assetPath@@/custom/dearaustralia-banner-large.jpg)">';
 
 			html += '<figure class="vw-custom-banner-media">'
-				+ '<video autoplay="" muted="" loop="" poster="custom/dearaustralia-banner-large.jpg">'
-					+ '<source src="custom/dearaustralia-video.mp4" type="video/mp4">'
-					+ '<source src="custom/dearaustralia-video.webm" type="video/webm">'
-					+ '<img src="custom/dearaustralia-banner-large.jpg">'
+				+ '<video autoplay="" muted="" loop="" poster="@@assetPath@@/custom/dearaustralia-banner-large.jpg">'
+					+ '<source src="@@assetPath@@/custom/dearaustralia-video.mp4" type="video/mp4">'
+					+ '<source src="@@assetPath@@/custom/dearaustralia-video.webm" type="video/webm">'
+					+ '<img src="@@assetPath@@/custom/dearaustralia-banner-large.jpg">'
 				+ '</video>'
 			+ '</figure>';
 		} else {
-			html = '<div data-vw-interactive-banner-insert class="vw-custom-banner" style="background-image:url(custom/dearaustralia-banner-small.jpg)">';
+			html = '<div data-vw-interactive-banner-insert class="vw-custom-banner" style="background-image:url(@@assetPath@@/custom/dearaustralia-banner-small.jpg)">';
 		}
 			
 			html += '<div class="vw-custom-banner-title">'
 				+ '<div class="vw-container vw-container-constrained">'
-					+ '<img src="custom/dearaustralia-headline.png" alt="Dear Australia" />'
+					+ '<img src="@@assetPath@@/custom/dearaustralia-headline.png" alt="Dear Australia" />'
 				+ '</div>'
 			+ '</div>'
 		+ '</div>';
