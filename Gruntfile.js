@@ -93,6 +93,12 @@ module.exports = function(grunt) {
     },
 
     watch: {
+      configFiles: {
+	    files: [ 'Gruntfile.js' ],
+	    options: {
+	      reload: true
+	    }
+	  },
       scripts: {
         files: [
           'src/**/*.js',
@@ -128,6 +134,14 @@ module.exports = function(grunt) {
           spawn: false,
           livereload: true
         }
+      },
+      custom: {
+        files: ['src/custom/*.*'],
+        tasks: ['copy:custom'],
+        options: {
+          spawn: false,
+          livereload: true
+        }
       }
     },
 
@@ -145,6 +159,16 @@ module.exports = function(grunt) {
               dest: 'build/assets/js/curl.js'
           }
         ]
+      },
+      custom: {
+      	files: [
+      	  {
+              cwd: 'src/',
+              src: ['custom/*.*'],
+              expand: true,
+              dest: 'build/'
+          }
+      	]
       }
     },
 

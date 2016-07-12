@@ -19,7 +19,8 @@ require.config({
     propertyParser: "../../bower_components/requirejs-plugins/src/propertyParser",
     "Markdown.Converter": "../../bower_components/requirejs-plugins/lib/Markdown.Converter",
     video: "../../bower_components/video.js/dist/video",
-    lodash: "vendor/lodash.custom.min"
+    lodash: "vendor/lodash.custom.min",
+    "object-fit-images": "../../bower_components/object-fit-images/dist/ofi.browser"
   },
   packages: [
 

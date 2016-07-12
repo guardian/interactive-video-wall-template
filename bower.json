@@ -16,7 +16,8 @@
     "reqwest": "~1.1.5",
     "text": "2.0.10",
     "video.js": "^5.10.7",
-    "guss": "^3.3.0"
+    "guss": "^3.3.0",
+    "object-fit-images": "*"
   },
   "resolutions": {
     "guss-webfonts": "^4.0.1"

@@ -2,12 +2,14 @@ define([
     'text!templates/appTemplate.html',
     'jquery',
     'lodash',
-    'video'
+    'video',
+    'object-fit-images'
 ], function(
     templateHTML,
     $,
     _,
-    vjs
+    vjs,
+    ofi
 ) {
 	'use strict';
 
@@ -18,6 +20,8 @@ define([
 		// DOM template example
 		el.innerHTML = templateHTML;
 		el.setAttribute('data-vw-interactive', '');
+
+		objectFitImages();
 
 		$(document).ready(function(){
 			// Global variables
@@ -86,6 +90,27 @@ define([
 			// Functions
 			// Function: Build the Video wall interactive
 			function populateVideoWall() {
+				if ( config.customHeader ){
+					var head = document.querySelector('head');
+					
+					if ( config.customHeader.cssFile ){
+						var css = document.createElement('link');
+						css.setAttribute('rel', 'stylesheet');
+						css.setAttribute('type', 'text/css');
+						css.setAttribute('href', config.customHeader.cssFile);
+						
+						head.appendChild(css);
+					}
+
+					if ( config.customHeader.scriptFile ){
+						var script = document.createElement('script');
+						script.setAttribute('type', 'text/javascript');
+						script.setAttribute('src', config.customHeader.scriptFile);
+
+						head.appendChild(script);
+					}
+				}
+
 				// Add the header and intro
 				$('[data-vw-interactive-hub]').html(data.main['hub.name']).attr('href', data.main['hub.url']);
 				$('[data-vw-interactive-name]').html(data.main.name);
@@ -159,6 +184,12 @@ define([
 
 					if ( newBreakpoint !== breakpoint ){
 						breakpoint = newBreakpoint;
+						
+						// emit breakpoint change event
+						var event = new Event('vwBreakpointChange', {
+							breakpoint: breakpoint
+						});
+						window.dispatchEvent(event);
 
 						$interactive.find('[data-vw-responsive-img]').each(function(index){
 							responsiveImageSwitcher(
@@ -665,15 +696,19 @@ define([
 
 			// Function: Detect the current breakpoint
 			function getBreakpoint() {
-				var width = window.innerWidth;
+				var bp, width = window.innerWidth;
 
 				if ( width < 740 ) {
-					return 'mobile';
+					bp = 'mobile';
 				} else if ( width >= 740 && width < 980 ) {
-					return 'tablet';
+					bp = 'tablet';
 				} else {
-					return 'desktop';
+					bp = 'desktop';
 				}
+
+				window.videoWall.config.breakpoint = bp;
+
+				return bp;
 			}
 
 	        // Function: Load JSON data
@@ -744,15 +779,6 @@ define([
 					console.log(DEBUG_msg);
 
 				});
-			}
-
-			function addCSS(url) {
-				var head = document.querySelector('head');
-				var link = document.createElement('link');
-				link.setAttribute('rel', 'stylesheet');
-				link.setAttribute('type', 'text/css');
-				link.setAttribute('href', url);
-				head.appendChild(link);
 			}
 		});
     }

@@ -38,13 +38,8 @@ define([], function() {
             			articles: "1n0___pxSaKJ7y8qSBfOHSba3MeLhhXJBMDb6UBXEc3M"
             		},
             		customHeader: {
-            			htmlFile: "",
-            			cssFiles: [
-            				""
-            			],
-            			scriptFiles: [
-            				""
-            			]
+            			cssFile: "custom/dearaustralia.css",
+            			scriptFile: "custom/dearaustralia.js"
             		}
             	}
             };
