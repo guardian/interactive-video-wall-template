@@ -25,15 +25,15 @@ define([
 
 		$(document).ready(function(){
 			// Global variables
-			var DEBUG = true;
+			var config = window.videoWall.config;
+			var DEBUG = window.videoWall.config.DEBUG;
+			if ( DEBUG ){
+				console.log('Info: Video Wall config:');
+				console.log(config);
+			}
 			var DEBUG_msg = 'There was an error. Use DEBUG mode for more detail.';
 			if ( DEBUG ){
-				console.log('DEBUG mode active.');
-			}
-			var config = window.videoWall.config;
-			if ( DEBUG ){
-				console.log('Video Wall config:');
-				console.log(config);
+				console.log('Info: DEBUG mode active.');
 			}
 			var data = {};
 			var $html = $('html');
@@ -46,11 +46,15 @@ define([
 			var $loading = $('[data-vw-loading-overlay]');
 			var $player;
 			var breakpoint = getBreakpoint();
+			if ( DEBUG ){
+				console.log('Info: Currently Active breakpoint: ' + breakpoint);
+			}
 			var videojs;
 			var videoExists = false;
 			if ( DEBUG ){
 				console.log('Active breakpoint: ' + breakpoint);
 			}
+			var startingVideo = location.hash;
 
 			// Load JSON data
 			if ( config.data ){
@@ -91,6 +95,10 @@ define([
 			// Function: Build the Video wall interactive
 			function populateVideoWall() {
 				if ( config.customHeader ){
+					if ( DEBUG ){
+						console.log('Info: Custom header configuration detected.');
+					}
+
 					var head = document.querySelector('head');
 					
 					if ( config.customHeader.cssFile ){
@@ -100,6 +108,10 @@ define([
 						css.setAttribute('href', config.customHeader.cssFile);
 						
 						head.appendChild(css);
+
+						if ( DEBUG ){
+							console.log('Info: Custom header CSS file "' + config.customHeader.cssFile + '" loaded.');
+						}
 					}
 
 					if ( config.customHeader.scriptFile ){
@@ -108,7 +120,28 @@ define([
 						script.setAttribute('src', config.customHeader.scriptFile);
 
 						head.appendChild(script);
+
+						if ( DEBUG ){
+							console.log('Info: Custom header JS file "' + config.customHeader.scriptFile + '" loaded.');
+						}
 					}
+				} else {
+					if ( DEBUG ){
+						console.log('Info: No Custom header configuration detected, loading default.');
+					}
+
+					var images = imageOptions(
+						data.main['banner.img.mobile'] !== '' ? data.main['banner.img.mobile'] : false, 
+						data.main['banner.img.tablet'] !== '' ? data.main['banner.img.tablet'] : false, 
+						data.main['banner.img.desktop'] !== '' ? data.main['banner.img.desktop'] : false
+					);
+
+					$('[data-vw-interactive-banner-default]').attr({
+						'src': images.default,
+						'data-vw-responsive-img-mobile': images.mobile,
+						'data-vw-responsive-img-tablet': images.tablet,
+						'data-vw-responsive-img-desktop': images.desktop
+					});
 				}
 
 				// Add the header and intro
@@ -126,6 +159,10 @@ define([
 				$('[data-vw-interactive-readmoretitle]').html(data.main.readmoretitle);
 				$('[data-vw-interactive-copyright]').html(data.main.copyright);
 
+				if ( DEBUG ){
+					console.log('Info: General template content added.');
+				}
+
 				// Add sharing
 				var msg = data.main.twittermsg ? data.main.twittermsg : null;
 				var img = data.main.fbimg ? data.main.fbimg : null;
@@ -135,7 +172,16 @@ define([
 					$(this).attr('href', share);
 				});
 
+				if ( DEBUG ){
+					console.log('Info: Share functionality added.');
+				}
+
+				// Share count
 				loadShares();
+
+				if ( DEBUG ){
+					console.log('Info: Latest Share count added.');
+				}
 
 				// Loop through and add the videos
 				var videoCount = 0;
@@ -143,11 +189,19 @@ define([
 				for ( var v = 0; v < data.videos.length; v++ ){
 					if ( data.videos[v].type === 'featured' ){
 						$videoList.attr('data-vw-video-tiles-featured', '');
+
+						if ( DEBUG ){
+							console.log('Info: Feature Video tile added.');
+						}
 					}
 
 					if ( data.videos[v].type !== 'placeholder' ){
 						videoCount++;
 						lastIndex = v;
+					} else {
+						if ( DEBUG ){
+							console.log('Info: Placeholder Video tile added.');
+						}
 					}
 
 					$videoList.append( videoTile(data.videos[v], v) );
@@ -158,21 +212,52 @@ define([
 					'data-vw-video-tiles-last-index': lastIndex
 				});
 
+				if ( DEBUG ){
+					console.log('Info: ' + videoCount + ' Video tiles added.');
+				}
+
 				// Loop through and add the articles
 				var articleCount = data.articles.length >= 4 ? 4 : data.articles.length;
+				var articles = 0;
 
 				for ( var a = 0; a < articleCount; a++ ){
 					$articleList.append( articleTile(data.articles[a], a) );
+					articles++;
+				}
+
+				if ( DEBUG ){
+					console.log('Info: ' + articles + ' Article tiles added.');
 				}
 
 				// Add listeners
 				addVideoWallListeners();
+
+				if ( DEBUG ){
+					console.log('Info: Event listeners activated.');
+				}
+
+				if ( startingVideo !== '' ){
+					var index = startingVideo.split('vid');
+					index = parseFloat(index[1]);
+
+					if ( index !== NaN && index >= 0 && index <= lastIndex && data.videos[index].type !== 'placeholder' ){
+						if ( DEBUG ){
+							console.log('Info: Starting video detected, video modal initiated.');
+						}
+
+						toggleModal(true, index);
+					}
+				}
 
 				// Remove loading overlay
 				setTimeout(function(){
 					$loading.fadeOut(600, function(){
 						$(this).removeAttr('data-vw-loading');
 					});
+
+					if ( DEBUG ){
+						console.log('Info: Loading overlay removed.');
+					}
 				}, 2000);
 			}
 
@@ -202,7 +287,7 @@ define([
 						});
 
 						if ( DEBUG ){
-							console.log('Active breakpoint: ' + breakpoint);
+							console.log('Info: Currently Active breakpoint: ' + breakpoint);
 						}
 					}
 				}, 200 ));
@@ -221,12 +306,22 @@ define([
 				// Listen for clicks on modal close button
 				$interactive.on('click', '[data-vw-video-modal-close]', function(e){
 					e.preventDefault();
+
+					if ( DEBUG ){
+						console.log('Info: Modal Close clicked.');
+					}
+
 					toggleModal(false);
 				});
 
 				// Listen for clicks on modal next button
 				$interactive.on('click', '[data-vw-video-modal-next]', function(e){
 					e.preventDefault();
+					
+					if ( DEBUG ){
+						console.log('Info: Modal Next clicked.');
+					}
+
 					var index = $(this).attr('data-vw-video-modal-target');
 					toggleModal(true, parseFloat(index));
 				});
@@ -234,6 +329,11 @@ define([
 				// Listen for clicks on modal prev button
 				$interactive.on('click', '[data-vw-video-modal-prev]', function(e){
 					e.preventDefault();
+
+					if ( DEBUG ){
+						console.log('Info: Modal Prev clicked.');
+					}
+
 					var index = $(this).attr('data-vw-video-modal-target');
 					toggleModal(true, parseFloat(index));
 				});
@@ -241,6 +341,10 @@ define([
 				// Listen for mouseover on video element
 				$interactive.on('mouseenter', '[data-vw-video-wrapper] > div', function(e){
 					e.preventDefault();
+
+					if ( DEBUG ){
+						console.log('Info: User cursor over modal video.');
+					}
 
 					var timer;
 
@@ -271,9 +375,17 @@ define([
 					emptyModal();
 					populateModal(index);
 					$html.attr('data-vw-modal-active', '');
+
+					if ( DEBUG ){
+						console.log('Info: Open modal.');
+					}
 				} else {
 					$html.removeAttr('data-vw-modal-active');
 					emptyModal();
+
+					if ( DEBUG ){
+						console.log('Info: Close modal.');
+					}
 				}
 			}
 
@@ -287,27 +399,37 @@ define([
 							// RELIES ON GUARDIAN.COM USING VIDEO JS
 							videojs = window.videojs;
 						}
+
+						if ( DEBUG ){
+							console.log('Info: Videojs initialised.');
+						}
 					}
 
 					$player.dispose();
 					$player = null;
-
 					$videoWrapper.empty();
-
 					videoExists = false;
+
+					if ( DEBUG ){
+						console.log('Info: Modal Video destroyed.');
+					}
 				}
 			}
 
 			// Function: Toggle video modal visibility
 			function populateModal(index) {
 				var content = data.videos[index];
+				var lastIndex = parseFloat($videoList.attr('data-vw-video-tiles-last-index'));
 
 				if ( content && ( index >= 0 || index <= lastIndex ) ){
+					if ( DEBUG ){
+						console.log('Info: Video at index ' + index + ' exists.');
+					}
+
 					videoExists = true;
 
 					var $next = $videoModal.find('[data-vw-video-modal-next]');
 					var $prev = $videoModal.find('[data-vw-video-modal-prev]');
-					var lastIndex = parseFloat($videoList.attr('data-vw-video-tiles-last-index'));
 					var firstIndex = parseFloat($videoList.find('[data-vw-video-item][data-vw-video-index]').eq(0).attr('data-vw-video-index'));
 					var nextIndex = parseFloat($videoList.find('[data-vw-video-item]:eq(' + index + ')').nextAll('[data-vw-video-index]:first').attr('data-vw-video-index'));
 					var prevIndex = parseFloat($videoList.find('[data-vw-video-item]:eq(' + index + ')').prevAll('[data-vw-video-index]:first').attr('data-vw-video-index'));
@@ -316,23 +438,23 @@ define([
 					$videoModal.removeAttr('data-vw-video-modal-hide-prev');
 
 					if ( index === lastIndex && index > firstIndex ){
-						console.log('state 1');
 						$videoModal.attr('data-vw-video-modal-hide-next', '');
 						$prev.attr('data-vw-video-modal-target', prevIndex);
 					} else if ( index === firstIndex && index < lastIndex ){
-						console.log('state 2');
 						$videoModal.attr('data-vw-video-modal-hide-prev', '');
 						$next.attr('data-vw-video-modal-target', nextIndex);
 					} else if ( index > firstIndex && index < lastIndex ){
-						console.log('state 3');
 						$next.attr('data-vw-video-modal-target', nextIndex);
 						$prev.attr('data-vw-video-modal-target', prevIndex);
 					} else {
-						console.log('state 4');
 						$videoModal.attr({
 							'data-vw-video-modal-hide-next': '',
 							'data-vw-video-modal-hide-prev': ''
 						});
+					}
+
+					if ( DEBUG ){
+						console.log('Info: Modal Prev/Next functionality added.');
 					}
 
 					// Add the title and description
@@ -346,6 +468,10 @@ define([
 						var share = socialShare($(this).attr('data-vw-share-target'), 'vid' + index, img, msg);
 						$(this).attr('href', share);
 					});
+
+					if ( DEBUG ){
+						console.log('Info: Modal Share functionality added.');
+					}
 
 					var images = imageOptions(
 						content['tile.img.mobile'] !== '' ? content['tile.img.mobile'] : false, 
@@ -367,18 +493,38 @@ define([
 						
 						if ( content['video.m3u8'] ){
 							html += '<source src="https://cdn.theguardian.tv/HLS/2016/07/05/070516obamahappybirthday.m3u8" type="video/m3u8"/>';
+
+							if ( DEBUG ){
+								console.log('Info: Video format video/m3u8 added to HTML.');
+							}
 						}
 						if ( content['video.mp4'] ){
 							html += '<source src="https://cdn.theguardian.tv/mainwebsite/2016/07/05/070516obamahappybirthday_desk.mp4" type="video/mp4"/>';
+
+							if ( DEBUG ){
+								console.log('Info: Video format video/mp4 added to HTML.');
+							}
 						}
 						if ( content['video.mp4'] ){
 							html += '<source src="https://multimedia.guardianapis.com/interactivevideos/video.php?octopusid=11660445&amp;format=video/3gp&amp;maxwidth=700" type="video/3gp:small"/>';
+
+							if ( DEBUG ){
+								console.log('Info: Video format video/3gp:small added to HTML.');
+							}
 						}
 						if ( content['video.mp4'] ){
 							html += '<source src="https://cdn.theguardian.tv/3gp/large/2016/07/05/070516obamahappybirthday_large.3gp" type="video/3gp:large"/>';
+
+							if ( DEBUG ){
+								console.log('Info: Video format video/3gp:large added to HTML.');
+							}
 						}
 						if ( content['video.mp4'] ){
 							html += '<source src="https://cdn.theguardian.tv/webM/2016/07/05/070516obamahappybirthday_synd_768k_vp8.webm" type="video/webm"/>';
+
+							if ( DEBUG ){
+								console.log('Info: Video format video/webm added to HTML.');
+							}
 						}
 						
 						html += '<object type="application/x-shockwave-flash" data="https://assets.guim.co.uk/flash/components/mediaelement/7c5b6df9c2993d7ed62d87361c4651f6/flashmediaelement-cdn.swf" width="640" height="640">';
@@ -400,7 +546,15 @@ define([
 						html += '</object>';
 					html += '</video>';
 
+					if ( DEBUG ){
+						console.log('Info: Video HTML generated.');
+					}
+
 					$videoWrapper.append(html);
+
+					if ( DEBUG ){
+						console.log('Info: Video HTML added to modal.');
+					}
 
 					if ( !videojs ){
 						if ( !window.videojs ){
@@ -408,6 +562,10 @@ define([
 						} else {
 							// RELIES ON GUARDIAN.COM USING VIDEO JS
 							videojs = window.videojs;
+						}
+
+						if ( DEBUG ){
+							console.log('Info: Videojs initialised.');
 						}
 					}
 
@@ -431,6 +589,10 @@ define([
 						"autoplay": false,
 						"preload": 'metadata'
 					}, function(){
+						if ( DEBUG ){
+							console.log('Info: Videojs initialised on modal video.');
+						}
+
 						upgradeVideoPlayerAccessibility($player);
 						$player.fullscreener();
 
@@ -446,11 +608,15 @@ define([
 						$player.on('volumechange', function(e){
 							window.videoWall.config.initialVolume = $player.volume();
 						});
+
+						if ( DEBUG ){
+							console.log('Info: Videojs enhancements and tweaks completed.');
+						}
 					});
 
 				} else {
 					if ( DEBUG ){
-						console.log('Error: The requested video content index was not found.');
+						console.log('Error: The requested video content at index ' + index + ' was not found.');
 					}
 					console.log(DEBUG_msg);
 				}
@@ -472,6 +638,10 @@ define([
 				$('.vjs-play-control', player.el()).attr('aria-label', 'video play');
 				$('.vjs-mute-control', player.el()).attr('aria-label', 'video mute');
 				$('.vjs-fullscreen-control', player.el()).attr('aria-label', 'video fullscreen');
+
+				if ( DEBUG ){
+					console.log('Info: Video accessibility upgraded.');
+				}
 			}
 
 			function fullscreener() {
@@ -485,6 +655,10 @@ define([
 							this.pause();
 						}
 						e.preventDefault();
+
+						if ( DEBUG ){
+							console.log('Info: Video Fullscreener clicked.');
+						}
 					},
 					dblclick: function (e) {
 						e.preventDefault();
@@ -493,10 +667,12 @@ define([
 						} else {
 							this.requestFullscreen();
 						}
+
+						if ( DEBUG ){
+							console.log('Info: Video Fullscreener double-clicked.');
+						}
 					}
 				};
-
-				console.log(clickbox);
 
 				clickbox.className = 'vjs-fullscreen-clickbox';
 				$(player.el()).addClass('vjs').append(clickbox);
@@ -575,6 +751,10 @@ define([
 					html += '</div>';
 					html += '<!-- VIDEO TILE END -->';
 
+				if ( DEBUG ){
+					console.log('Info: Video tile HTML generated.');
+				}
+
 				return html;
 			}
 
@@ -606,6 +786,10 @@ define([
 						html += '</a>';
 					html += '</div>';
 					html += '<!-- FOOTER ARTICLE ITEM END -->';
+
+				if ( DEBUG ){
+					console.log('Info: Article tile HTML generated.');
+				}
 
 				return html;
 			}
@@ -669,6 +853,10 @@ define([
 					def = tab;
 				} else if ( breakpoint === 'desktop' ){
 					def = desk;
+				}
+
+				if ( DEBUG ){
+					console.log('Info: Responsive image options generated.');
 				}
 
 				return {
@@ -752,8 +940,17 @@ define([
 
 			// Function: Load the Facebook share count for the URL
 			function loadShares() {
-				//var url = 'https://graph.facebook.com/' + window.location.href;
-				var url = 'https://graph.facebook.com/http://www.theguardian.com/australia-news/2016/jul/07/mediscare-campaign-didnt-worry-my-electorate-says-christopher-pyne';
+				var url;
+
+				if ( DEBUG ){
+					url = 'https://graph.facebook.com/http://www.theguardian.com/australia-news/2016/jul/07/mediscare-campaign-didnt-worry-my-electorate-says-christopher-pyne';
+				} else {
+					url = 'https://graph.facebook.com/' + window.location.href;
+				}
+
+				if ( DEBUG ){
+					console.log('Info: Loading shares for: ' + url + '.');
+				}
 
 				var request = $.ajax({
 					method: "GET",
@@ -764,6 +961,10 @@ define([
 					// success
 					if ( response ){
 						$interactive.find('[data-vw-social-shares]').text(response.shares);
+
+						if ( DEBUG ){
+							console.log('Info: A Facebook shares returned ' + response.shares + ' shares.');
+						}
 					} else {
 						// Failed
 						if ( DEBUG ){

@@ -1,6 +1,4 @@
 (function () {
-	console.log('hello you!');
-
 	// The element in which the banner will be inserted
 	// Leave as is unless targeting a different element
     var target = $("[data-vw-interactive-banner]");
