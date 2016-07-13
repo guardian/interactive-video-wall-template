@@ -29,6 +29,7 @@
 .vw-custom-banner figure.vw-custom-banner-media video {
 	width: 100%;
 	object-fit: cover;
+	font-family: 'object-fit: cover;';
 	position: absolute;
     height: 100%;
 }
@@ -36,12 +37,14 @@
 @media (max-width: 739px) {
 	.vw-custom-banner figure.vw-custom-banner-media video {
 		object-position: 60% 0%;
+		font-family: 'object-position: 60% 0%;';
 	}
 }
 
 @media (min-width: 740px) and (max-width: 979px) {
 	.vw-custom-banner figure.vw-custom-banner-media video {
 		object-position: 60% 0%;
+		font-family: 'object-position: 60% 0%;';
 	}
 }
 

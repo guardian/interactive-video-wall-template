@@ -32,11 +32,13 @@ define([
 				console.log(config);
 			}
 			var DEBUG_msg = 'There was an error. Use DEBUG mode for more detail.';
+			var DEBUG_msg_fatal = 'There was a fatal error. Use DEBUG mode for more detail.';
 			if ( DEBUG ){
 				console.log('Info: DEBUG mode active.');
 			}
 			var data = {};
 			var $html = $('html');
+			var $head = document.querySelector('head');
 			var $body = $('body');
 			var $interactive = $('[data-vw-interactive]');
 			var $videoList = $('[data-vw-video-tiles]');
@@ -77,16 +79,18 @@ define([
 						// Failed
 						if ( DEBUG ){
 							console.log('Fatal Error: A data source request contained no data.');
+						} else {
+							console.log(DEBUG_msg_fatal);
 						}
-						console.log(DEBUG_msg);
 
 					}
 				}).fail(function(error) {
 					
 					if ( DEBUG ){
 						console.log('Fatal Error: An AJAX request resulted in a ' + error.status + ' ' + error.statusText + ' error.');
+					} else {
+						console.log(DEBUG_msg_fatal);
 					}
-					console.log(DEBUG_msg);
 
 				});
 			}
@@ -94,12 +98,22 @@ define([
 			// Functions
 			// Function: Build the Video wall interactive
 			function populateVideoWall() {
+				if ( config.theme.scriptFile ){
+					var theme = document.createElement('script');
+					theme.setAttribute('type', 'text/javascript');
+					theme.setAttribute('src', config.theme.scriptFile);
+
+					$head.appendChild(theme);
+
+					if ( DEBUG ){
+						console.log('Info: Theme JS file "' + config.theme.scriptFile + '" loaded.');
+					}
+				}
+
 				if ( config.customHeader ){
 					if ( DEBUG ){
 						console.log('Info: Custom header configuration detected.');
 					}
-
-					var head = document.querySelector('head');
 					
 					if ( config.customHeader.cssFile ){
 						var css = document.createElement('link');
@@ -107,7 +121,7 @@ define([
 						css.setAttribute('type', 'text/css');
 						css.setAttribute('href', config.customHeader.cssFile);
 						
-						head.appendChild(css);
+						$head.appendChild(css);
 
 						if ( DEBUG ){
 							console.log('Info: Custom header CSS file "' + config.customHeader.cssFile + '" loaded.');
@@ -119,7 +133,7 @@ define([
 						script.setAttribute('type', 'text/javascript');
 						script.setAttribute('src', config.customHeader.scriptFile);
 
-						head.appendChild(script);
+						$head.appendChild(script);
 
 						if ( DEBUG ){
 							console.log('Info: Custom header JS file "' + config.customHeader.scriptFile + '" loaded.');
@@ -617,8 +631,9 @@ define([
 				} else {
 					if ( DEBUG ){
 						console.log('Error: The requested video content at index ' + index + ' was not found.');
+					} else {
+						console.log(DEBUG_msg);
 					}
-					console.log(DEBUG_msg);
 				}
 			}
 
@@ -841,6 +856,8 @@ define([
 				if ( !mobile && !tablet && !desktop ){
 					if ( DEBUG ){
 						console.log('Error: No valid image URLs were provided to imageOptions.');
+					} else {
+						console.log(DEBUG_msg);
 					}
 
 					return false;
@@ -878,6 +895,8 @@ define([
 				} else {
 					if ( DEBUG ){
 						console.log('Error: An unknown breakpoint value was provided to responsiveImageSwitcher.');
+					} else {
+						console.log(DEBUG_msg);
 					}
 				}
 			}
@@ -930,9 +949,10 @@ define([
 				} else {
 					// Failed
 					if ( DEBUG ){
-						console.log('Fatal Error: Unknown target for share link.');
+						console.log('Error: Unknown target for share link.');
+					} else {
+						console.log(DEBUG_msg);
 					}
-					console.log(DEBUG_msg);
 
 					return '';
 				}
@@ -942,11 +962,7 @@ define([
 			function loadShares() {
 				var url;
 
-				if ( DEBUG ){
-					url = 'https://graph.facebook.com/http://www.theguardian.com/australia-news/2016/jul/07/mediscare-campaign-didnt-worry-my-electorate-says-christopher-pyne';
-				} else {
-					url = 'https://graph.facebook.com/' + window.location.href;
-				}
+				url = 'https://graph.facebook.com/' + window.location.href;
 
 				if ( DEBUG ){
 					console.log('Info: Loading shares for: ' + url + '.');
@@ -968,16 +984,18 @@ define([
 					} else {
 						// Failed
 						if ( DEBUG ){
-							console.log('Fatal Error: A Facebook shares request contained no data.');
+							console.log('Error: A Facebook shares request contained no data.');
+						} else {
+							console.log(DEBUG_msg);
 						}
-						console.log(DEBUG_msg);
 					}
 				}).fail(function(error) {
 					
 					if ( DEBUG ){
-						console.log('Fatal Error: An AJAX request for Facebook shares resulted in a ' + error.status + ' ' + error.statusText + ' error.');
+						console.log('Error: An AJAX request for Facebook shares resulted in a ' + error.status + ' ' + error.statusText + ' error.');
+					} else {
+						console.log(DEBUG_msg);
 					}
-					console.log(DEBUG_msg);
 
 				});
 			}

@@ -2,7 +2,7 @@
 var pkg = require('./package.json');
 var currentTime = +new Date();
 var versionedAssetPath = 'assets-' + currentTime;
-var CDN = '//interactive.guim.co.uk/';
+var CDN = 'https://interactive.guim.co.uk/';
 var deployAssetPath = CDN + pkg.config.s3_folder + versionedAssetPath;
 var localAssetPath = 'http://localhost:' + pkg.config.port + '/assets';
 // var localAssetPath = 'http://guardianau-dcd-preview.s3.amazonaws.com/lexus-interactive/assets';
@@ -28,15 +28,6 @@ module.exports = function(grunt) {
           }
         }
       }
-    },
-
-    bowerRequirejs: {
-        all: {
-            rjsConfig: './src/js/require.js',
-            options: {
-                baseUrl: './src/js/'
-            }
-        }
     },
 
     sass: {
@@ -297,7 +288,6 @@ module.exports = function(grunt) {
     'clean',
     'sass',
     'autoprefixer',
-    'bowerRequirejs',
     'requirejs',
     'copy',
     'newer:imagemin'
