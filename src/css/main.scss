@@ -40,6 +40,10 @@ $border-divider: 1px dotted $color-border;
 }
 
 /* General */
+html {
+	font-size: 16px;
+}
+
 body {
 	background: $color-bg;
 	color: $color-text;
@@ -47,6 +51,7 @@ body {
 	margin: 0;
 	padding: 0;
 	line-height: 1.5;
+	font-size: 16px;
 
 	header#header,
 	.top-banner-ad-container {
@@ -56,7 +61,6 @@ body {
 	figure.element-interactive.interactive {
 		margin: 0;
 		padding: 0;
-		margin-top: -48px;
 	}
 
 	article#article {
@@ -242,6 +246,8 @@ body {
 
 /* Header */
 .vw-header {
+	margin-top: -48px;
+
 	&-banner {
 		position: relative;
 
@@ -278,7 +284,7 @@ body {
 			bottom: 0;
 			width: 100%;
 			z-index: 1;
-			padding: 2rem 0 0;
+			padding: 1rem 0 0;
 			background-color: rgba(0,0,0,0.6);
 			background: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0.5)), to($color-bg));
 			background: -webkit-linear-gradient(rgba(0,0,0,0.5), $color-bg);
@@ -303,7 +309,7 @@ body {
 				font-size: 2.25rem;
 				line-height: 2.5rem;
 				font-weight: 200;
-				padding: 0.6rem 0 2rem;
+				padding: 0.2rem 0 2rem;
 				border-bottom: $border-divider;
 				color: $color-title;
 
@@ -438,6 +444,11 @@ body {
 			right: 1rem;
 			bottom: 1rem;
 			border: 0;
+			text-decoration: none !important;
+
+			&:hover {
+				text-decoration: none !important;
+			}
 		}
 
 		&:before {
@@ -901,7 +912,7 @@ body {
 
 /* Footer */
 .vw-footer {
-	padding-bottom: 5rem;
+	padding-bottom: 3rem;
 	overflow: hidden;
 
 	&-title {
@@ -923,7 +934,7 @@ body {
 	}
 
 	&-branding {
-		padding-top: 2rem;
+		overflow: hidden;
 		
 		p {
 			margin: 0;
@@ -959,7 +970,7 @@ body {
 	overflow: hidden;
 	border-top: $border-divider;
 	border-bottom: $border-divider;
-	padding: 1rem 0;
+	padding: 1rem 0 3rem;
 
 	&-item {
 		width: 25%;
@@ -1058,7 +1069,11 @@ body {
 
 /* Modal */
 html[data-vw-modal-active] {
-	overflow: hidden;
+	overflow: hidden !important;
+
+	body {
+		overflow: hidden !important;
+	}
 
 	.vw-modal {
 		display: block;
@@ -1244,30 +1259,4 @@ html[data-vw-modal-active] {
 			display: none;
 		}
 	}
-}
-
-/* Breakpoints */
-
-@media (max-width: 739px) {
-
-}
-
-@media (min-width: 740px) {
-
-}
-
-@media (min-width: 740px) and (max-width: 979px) {
-
-}
-
-@media (min-width: 980px) and (max-width: 1139px) {
-
-}
-
-@media (min-width: 1140px) and (max-width: 1299px) {
-
-}
-
-@media (min-width: 1300px) {
-	
 }

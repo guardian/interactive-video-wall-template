@@ -231,16 +231,25 @@ define([
 				}
 
 				// Loop through and add the articles
-				var articleCount = data.articles.length >= 4 ? 4 : data.articles.length;
-				var articles = 0;
+				if ( data.articles[0].id !== '-1' && data.articles.length > 0 ){
+					var articleCount = data.articles.length >= 4 ? 4 : data.articles.length;
+					var articles = 0;
 
-				for ( var a = 0; a < articleCount; a++ ){
-					$articleList.append( articleTile(data.articles[a], a) );
-					articles++;
-				}
+					for ( var a = 0; a < articleCount; a++ ){
+						$articleList.append( articleTile(data.articles[a], a) );
+						articles++;
+					}
 
-				if ( DEBUG ){
-					console.log('Info: ' + articles + ' Article tiles added.');
+					if ( DEBUG ){
+						console.log('Info: ' + articles + ' Article tiles added.');
+					}
+				} else {
+					$articleList.parent().remove();
+					$('[data-vw-interactive-readmoretitle]').remove();
+
+					if ( DEBUG ){
+						console.log('Info: No articles provided.');
+					}
 				}
 
 				// Add listeners

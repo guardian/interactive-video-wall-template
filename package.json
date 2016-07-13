@@ -10,7 +10,7 @@
   "license": "Apache 2.0",
   "config": {
     "port": 9000,
-    "s3_folder": "2016/07/dear-australia/"
+    "s3_folder": "embed/labs/video-wall-template/"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.7",

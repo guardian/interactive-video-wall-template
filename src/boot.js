@@ -36,17 +36,17 @@ define([], function() {
             	config: {
             		DEBUG: true,
             		data: {
-            			main: "1okuaX6Gem9z5Vd3VqFcGHzxS5k0DFMhf9Mp1qpQJXb4",
-            			videos: "1322jBQ9h5wKPpfKAVGQSSh9d-EDBVvVx6M7O1c1-XNY",
-            			articles: "1n0___pxSaKJ7y8qSBfOHSba3MeLhhXJBMDb6UBXEc3M"
+            			main: "12oi2Pm-Ef4XDWU_-Qjf1v0Al8LCdUdyv3Bl67YzfUB4",
+            			videos: "1gOaGqIJT_IaUmNBImLvbT7xsWBzWrttr2nP27aJWfz8",
+            			articles: "1kxMxJtznvgtg1SXehnME3IQLM4NDrZz9d7Zgjq9J1eU"
             		},
-            		theme: {
-            			cssFile: "@@assetPath@@/custom/dearaustralia.css",
-            			scriptFile: "@@assetPath@@/custom/dearaustralia.js"
-            		},
+            		theme: false, /* {
+            			cssFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.css",
+            			scriptFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.js"
+            		}, */
             		customHeader: {
-            			cssFile: "@@assetPath@@/custom/dearaustralia.css",
-            			scriptFile: "@@assetPath@@/custom/dearaustralia.js"
+            			cssFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.css",
+            			scriptFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.js"
             		}
             	}
             };
