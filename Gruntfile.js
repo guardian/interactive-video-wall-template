@@ -157,7 +157,7 @@ module.exports = function(grunt) {
               cwd: 'src/',
               src: ['custom/*.*'],
               expand: true,
-              dest: 'build/assets/'
+              dest: 'build/'
           }
       	]
       }

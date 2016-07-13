@@ -319,7 +319,10 @@ define([
 				$interactive.on('click', '[data-vw-video-item]', function(e){
 					e.preventDefault();
 					var index = $(this).attr('data-vw-video-index');
-					toggleModal(true, parseFloat(index));
+
+					if ( index ){
+						toggleModal(true, parseFloat(index));
+					}
 
 					if ( DEBUG ){
 						console.log('Info: video item at index ' + index + ' clicked.');
@@ -515,35 +518,35 @@ define([
 						html += '>';
 						
 						if ( content['video.m3u8'] ){
-							html += '<source src="https://cdn.theguardian.tv/HLS/2016/07/05/070516obamahappybirthday.m3u8" type="video/m3u8"/>';
+							html += '<source src="' + content['video.m3u8'] + '" type="video/m3u8"/>';
 
 							if ( DEBUG ){
 								console.log('Info: Video format video/m3u8 added to HTML.');
 							}
 						}
 						if ( content['video.mp4'] ){
-							html += '<source src="https://cdn.theguardian.tv/mainwebsite/2016/07/05/070516obamahappybirthday_desk.mp4" type="video/mp4"/>';
+							html += '<source src="' + content['video.mp4'] + '" type="video/mp4"/>';
 
 							if ( DEBUG ){
 								console.log('Info: Video format video/mp4 added to HTML.');
 							}
 						}
-						if ( content['video.mp4'] ){
-							html += '<source src="https://multimedia.guardianapis.com/interactivevideos/video.php?octopusid=11660445&amp;format=video/3gp&amp;maxwidth=700" type="video/3gp:small"/>';
+						if ( content['video.3gp.small'] ){
+							html += '<source src="' + content['video.3gp.small'] + '" type="video/3gp:small"/>';
 
 							if ( DEBUG ){
 								console.log('Info: Video format video/3gp:small added to HTML.');
 							}
 						}
-						if ( content['video.mp4'] ){
-							html += '<source src="https://cdn.theguardian.tv/3gp/large/2016/07/05/070516obamahappybirthday_large.3gp" type="video/3gp:large"/>';
+						if ( content['video.3gp.large'] ){
+							html += '<source src="' + content['video.3gp.large'] + '" type="video/3gp:large"/>';
 
 							if ( DEBUG ){
 								console.log('Info: Video format video/3gp:large added to HTML.');
 							}
 						}
-						if ( content['video.mp4'] ){
-							html += '<source src="https://cdn.theguardian.tv/webM/2016/07/05/070516obamahappybirthday_synd_768k_vp8.webm" type="video/webm"/>';
+						if ( content['video.webm'] ){
+							html += '<source src="' + content['video.webm'] + '" type="video/webm"/>';
 
 							if ( DEBUG ){
 								console.log('Info: Video format video/webm added to HTML.');
@@ -949,12 +952,16 @@ define([
 			// Function: Share content on socila media
 			function socialShare(target, item, img, msg) {
 				var url = window.location.href;
-				item = item ? '#' + item : '';
+				var hash = item ? '#' + item : '';
 
 				if ( target === 'twitter' ){
-					return 'https://twitter.com/intent/tweet?text=' + msg + '&url=' + url + item;
+					return 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(msg) + '&url=' + encodeURIComponent(url + hash);
 				} else if ( target === 'facebook' ){
-					return 'https://www.facebook.com/dialog/share?app_id=180444840287&href=' + url + item + '&redirect_uri=' + url + item + '&picture=' + img;
+					if ( img ){
+						return 'https://www.facebook.com/dialog/share?app_id=180444840287&href=' + encodeURIComponent(url + hash) + '&redirect_uri=' + encodeURIComponent(url + hash) + '&picture=' + encodeURIComponent(img);
+					} else {
+						return 'https://www.facebook.com/dialog/share?app_id=180444840287&href=' + encodeURIComponent(url + hash) + '&redirect_uri=' + encodeURIComponent(url + hash);
+					}
 				} else {
 					// Failed
 					if ( DEBUG ){
