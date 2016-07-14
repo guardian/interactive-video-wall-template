@@ -38,6 +38,7 @@ define([
 			}
 			var data = {};
 			var $html = $('html');
+			$html.attr('data-vw-interactive-loading', '');
 			var $head = document.querySelector('head');
 			var $body = $('body');
 			var $interactive = $('[data-vw-interactive]');
@@ -182,7 +183,7 @@ define([
 				var img = data.main.fbimg ? data.main.fbimg : null;
 
 				$('[data-vw-share-global] [data-vw-share]').each(function(){
-					var share = socialShare($(this).attr('data-vw-share-target'), null, img, msg);
+					var share = socialShare($(this).attr('data-vw-share-target'), null, img, msg, data.main.sharelink);
 					$(this).attr('href', share);
 				});
 
@@ -274,6 +275,10 @@ define([
 
 				// Remove loading overlay
 				setTimeout(function(){
+					$html.removeAttr('data-vw-interactive-loading');
+					setHeaderHeight();
+					objectFitImages(null, {watchMQ: true});
+
 					$loading.fadeOut(600, function(){
 						$(this).removeAttr('data-vw-loading');
 					});
@@ -282,6 +287,19 @@ define([
 						console.log('Info: Loading overlay removed.');
 					}
 				}, 5000);
+			}
+
+			function setHeaderHeight() {
+				var adHeight = $('.top-banner-ad-container').outerHeight() >= 0 ? $('.top-banner-ad-container').outerHeight() : 0;
+				var adBlockHeight = $('.adblock-sticky__message').outerHeight() >= 0 ? $('.adblock-sticky__message').outerHeight() : 0;
+				var windowHeight = $(window).height();
+				var bannerHeight = windowHeight - adHeight;
+
+				console.log(bannerHeight);
+
+				$('[data-vw-interactive-banner]').css('height', bannerHeight);
+				$('[data-vw-interactive-banner] > div').css('height', bannerHeight);
+				$('[data-vw-interactive-banner] > div > figure').css('height', bannerHeight);
 			}
 
 			// Function: Add event listeners to the interactive
@@ -313,6 +331,8 @@ define([
 							console.log('Info: Currently Active breakpoint: ' + breakpoint);
 						}
 					}
+
+					setHeaderHeight();
 				}, 200 ));
 
 				// Listen for clicks on video item to launch modal
@@ -491,7 +511,7 @@ define([
 					var img = content.fbimg ? content.fbimg : null;
 
 					$videoModal.find('[data-vw-share]').each(function(){
-						var share = socialShare($(this).attr('data-vw-share-target'), 'vid' + index, img, msg);
+						var share = socialShare($(this).attr('data-vw-share-target'), 'vid' + index, img, msg, content.sharelink);
 						$(this).attr('href', share);
 					});
 
@@ -950,17 +970,14 @@ define([
 			}
 
 			// Function: Share content on socila media
-			function socialShare(target, item, img, msg) {
-				var url = window.location.href;
-				var hash = item ? '#' + item : '';
-
+			function socialShare(target, item, img, msg, link) {
 				if ( target === 'twitter' ){
-					return 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(msg) + '&url=' + encodeURIComponent(url + hash);
+					return 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(msg) + '&url=' + encodeURIComponent(link);
 				} else if ( target === 'facebook' ){
 					if ( img ){
-						return 'https://www.facebook.com/dialog/share?app_id=180444840287&href=' + encodeURIComponent(url + hash) + '&redirect_uri=' + encodeURIComponent(url + hash) + '&picture=' + encodeURIComponent(img);
+						return 'https://www.facebook.com/dialog/share?app_id=180444840287&href=' + encodeURIComponent(link) + '&redirect_uri=' + encodeURIComponent(link) + '&picture=' + encodeURIComponent(img);
 					} else {
-						return 'https://www.facebook.com/dialog/share?app_id=180444840287&href=' + encodeURIComponent(url + hash) + '&redirect_uri=' + encodeURIComponent(url + hash);
+						return 'https://www.facebook.com/dialog/share?app_id=180444840287&href=' + encodeURIComponent(link) + '&redirect_uri=' + encodeURIComponent(link);
 					}
 				} else {
 					// Failed
@@ -978,7 +995,7 @@ define([
 			function loadShares() {
 				var url;
 
-				url = 'https://graph.facebook.com/' + window.location.href;
+				url = 'https://graph.facebook.com/' + encodeURIComponent(window.location.href);
 
 				if ( DEBUG ){
 					console.log('Info: Loading shares for: ' + url + '.');

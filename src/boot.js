@@ -34,7 +34,7 @@ define([], function() {
         	
             window.videoWall = {
             	config: {
-            		DEBUG: true,
+            		DEBUG: false,
             		data: {
             			main: "12oi2Pm-Ef4XDWU_-Qjf1v0Al8LCdUdyv3Bl67YzfUB4",
             			videos: "1gOaGqIJT_IaUmNBImLvbT7xsWBzWrttr2nP27aJWfz8",
