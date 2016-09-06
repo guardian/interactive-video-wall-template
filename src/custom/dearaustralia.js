@@ -12,7 +12,6 @@
     // Listen for breakpoint changes
     $(window).on('vwBreakpointChange', function(){
     	if ( window.videoWall.config.breakpoint !== breakpoint ){
-    		console.log('change!');
     		breakpoint = window.videoWall.config.breakpoint;
     		target.empty().append( bannerTemplate( breakpoint ) );
     	}

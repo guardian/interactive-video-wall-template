@@ -295,8 +295,6 @@ define([
 				var windowHeight = $(window).height();
 				var bannerHeight = windowHeight - adHeight;
 
-				console.log(bannerHeight);
-
 				$('[data-vw-interactive-banner]').css('height', bannerHeight);
 				$('[data-vw-interactive-banner] > div').css('height', bannerHeight);
 				$('[data-vw-interactive-banner] > div > figure').css('height', bannerHeight);
@@ -995,7 +993,7 @@ define([
 			function loadShares() {
 				var url;
 
-				url = 'https://graph.facebook.com/' + encodeURIComponent(window.location.href);
+				url = 'https://graph.facebook.com/http://www.theguardian.com/australia-news/ng-interactive/2016/jul/14/dear-australia-guardian-video-series'; //'https://graph.facebook.com/' + encodeURIComponent(window.location.href);
 
 				if ( DEBUG ){
 					console.log('Info: Loading shares for: ' + url + '.');
@@ -1009,10 +1007,10 @@ define([
 				}).done(function( response ){
 					// success
 					if ( response ){
-						$interactive.find('[data-vw-social-shares]').text(response.shares);
+						$interactive.find('[data-vw-social-shares]').text(response.share.share_count);
 
 						if ( DEBUG ){
-							console.log('Info: A Facebook shares returned ' + response.shares + ' shares.');
+							console.log('Info: A Facebook shares returned ' + response.share.share_count + ' shares.');
 						}
 					} else {
 						// Failed

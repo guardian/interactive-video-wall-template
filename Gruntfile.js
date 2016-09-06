@@ -1,7 +1,7 @@
 'use strict';
 var pkg = require('./package.json');
 var currentTime = +new Date();
-var versionedAssetPath = 'assets-' + currentTime;
+var versionedAssetPath = 'assets';
 var CDN = 'https://interactive.guim.co.uk/';
 var deployAssetPath = CDN + pkg.config.s3_folder + versionedAssetPath;
 var localAssetPath = 'http://localhost:' + pkg.config.port + '/assets';
