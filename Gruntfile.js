@@ -58,7 +58,8 @@ module.exports = function(grunt) {
         files: [
             'Gruntfile.js',
             'src/**/*.js',
-            '!src/js/require.js'
+            '!src/js/require.js',
+            '!src/js/vendor/*.js'
         ]
     },
 

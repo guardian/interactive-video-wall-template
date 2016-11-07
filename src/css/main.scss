@@ -1074,6 +1074,24 @@ html[data-vw-interactive-loading][data-vw-modal-active] {
 	background: $color-modal-bg;
 	overflow-y: auto;
 
+	&-scroll-controls {
+		position: fixed;
+		z-index: 500;
+		bottom: 20px;
+		width: 100%;
+		text-align: center;
+		display: none;
+
+		> a {
+			display: inline-block;
+			position: static;
+		}
+
+		[data-vw-interactive-show-scroll] & {
+			display: block;
+		}
+	}
+
 	&-title {
 		border-top: $border-divider;
 		padding-top: 1rem;
@@ -1165,7 +1183,7 @@ html[data-vw-interactive-loading][data-vw-modal-active] {
 		@media (max-width: 979px) {
 			margin-right: 0;
 			width: 100%;
-			margin-bottom: 3rem;
+			margin-bottom: 5rem;
 			order: 3;
 			padding-top: 1rem;
 		}
@@ -1205,7 +1223,8 @@ html[data-vw-interactive-loading][data-vw-modal-active] {
 		}
 	}
 
-	&-next {
+	&-next,
+	&-down {
 		background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjMiIGhlaWdodD0iMjMiIHZpZXdCb3g9IjAgMCAyMyAyMyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGUvPjxkZXNjLz48ZyBmaWxsPSJub25lIj48cGF0aCBkPSJNMjMgMTEuNUwxMi43MDQgMjEuNmwtLjk2LS45NkwxOS44IDEySDB2LTJoMTkuOEwxMS43NDUuOTZsLjk2LS45NkwyMyAxMC41djEiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMTEgMzIuMzEzQy0uNzUgMzIuMzEzLTEwLjMxIDIyLjc1My0xMC4zMSAxMWMwLTExLjc1IDkuNTYtMjEuMzEyIDIxLjMxMy0yMS4zMTIgMTEuNzUyIDAgMjEuMzEzIDkuNTYgMjEuMzEzIDIxLjMxMlMyMi43NTMgMzIuMzEzIDExIDMyLjMxM00xMS0xMWMtMTIuMTUgMC0yMiA5Ljg1LTIyIDIyczkuODUgMjIgMjIgMjIgMjItOS44NSAyMi0yMi05Ljg1LTIyLTIyLTIyIiBmaWxsPSIjNzA3MDcwIi8+PC9nPjwvc3ZnPg==);
 		position: absolute;
 		right: -3.375rem;
@@ -1218,7 +1237,8 @@ html[data-vw-interactive-loading][data-vw-modal-active] {
 		}
 	}
 
-	&-prev {
+	&-prev,
+	&-up {
 		background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjMiIGhlaWdodD0iMjMiIHZpZXdCb3g9IjAgMCAyMyAyMyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGUvPjxkZXNjLz48ZyBmaWxsPSJub25lIj48cGF0aCBkPSJNMCAxMS41bDEwLjI5NiAxMC4xLjk2LS45NkwzLjIgMTJIMjN2LTJIMy4yTDExLjI1NS45NmwtLjk2LS45NkwwIDEwLjV2MSIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0xMSAzMi4zMTNDLS43NSAzMi4zMTMtMTAuMzEgMjIuNzUzLTEwLjMxIDExYzAtMTEuNzUgOS41Ni0yMS4zMTIgMjEuMzEzLTIxLjMxMiAxMS43NTIgMCAyMS4zMTMgOS41NiAyMS4zMTMgMjEuMzEyUzIyLjc1MyAzMi4zMTMgMTEgMzIuMzEzTTExLTExYy0xMi4xNSAwLTIyIDkuODUtMjIgMjJzOS44NSAyMiAyMiAyMiAyMi05Ljg1IDIyLTIyLTkuODUtMjItMjItMjIiIGZpbGw9IiM3MDcwNzAiLz48L2c+PC9zdmc+);
 		position: absolute;
 		left: -3.375rem;
@@ -1229,6 +1249,12 @@ html[data-vw-interactive-loading][data-vw-modal-active] {
 			margin: 0 1rem 0 0;
 			position: static;
 		}
+	}
+
+	&-up,
+	&-down {
+		margin: 0.5rem;
+		transform: rotate(90deg);
 	}
 
 	&[data-vw-video-modal-hide-next] {

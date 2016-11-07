@@ -21,6 +21,12 @@ define([
 		el.innerHTML = templateHTML;
 		el.setAttribute('data-vw-interactive', '');
 
+		var isApp = location.href.indexOf('http') !== 0 ? 0 : 1;
+
+		if ( isApp ){
+			el.setAttribute('data-vw-interactive-show-scroll', '');
+		}
+
 		objectFitImages();
 
 		$(document).ready(function(){
@@ -71,7 +77,7 @@ define([
 
 						// Success, initiate page build
 						data.main = data_main[0].sheets.Sheet1[0];
-						data.videos = data_videos[0].sheets.Sheet1;
+						data.videos = _.sortBy(data_videos[0].sheets.Sheet1, ['order']);
 						data.articles = data_articles[0].sheets.Sheet1;
 						populateVideoWall();
 
@@ -201,6 +207,7 @@ define([
 				// Loop through and add the videos
 				var videoCount = 0;
 				var lastIndex;
+
 				for ( var v = 0; v < data.videos.length; v++ ){
 					if ( data.videos[v].type === 'featured' ){
 						$videoList.attr('data-vw-video-tiles-featured', '');
@@ -261,15 +268,15 @@ define([
 				}
 
 				if ( startingVideo !== '' ){
-					var index = startingVideo.split('vid');
-					index = parseFloat(index[1]);
+					var id = startingVideo.split('vid');
+					id = parseFloat(id[1]);
 
-					if ( index !== NaN && index >= 0 && index <= lastIndex && data.videos[index].type !== 'placeholder' ){
+					if ( id !== NaN && id >= 0 && id <= lastIndex && data.videos[id].type !== 'placeholder' ){
 						if ( DEBUG ){
 							console.log('Info: Starting video detected, video modal initiated.');
 						}
 
-						toggleModal(true, index);
+						toggleModal(true, false, id);
 					}
 				}
 
@@ -286,7 +293,7 @@ define([
 					if ( DEBUG ){
 						console.log('Info: Loading overlay removed.');
 					}
-				}, 5000);
+				}, 1000);
 			}
 
 			function setHeaderHeight() {
@@ -382,6 +389,19 @@ define([
 					toggleModal(true, parseFloat(index));
 				});
 
+				// Listen for clicks on modal SCROLL BUTTONS
+				$interactive.on('click', '[data-vw-video-modal-scroll] a', function(e){
+					e.preventDefault();
+					
+					if ( DEBUG ){
+						console.log('Info: Modal Scroll clicked.');
+					}
+
+					var direction = $(this).data('direction');
+
+					scrollModal(direction);
+				});
+
 				// Listen for mouseover on video element
 				$interactive.on('mouseenter', '[data-vw-video-wrapper] > div', function(e){
 					e.preventDefault();
@@ -414,10 +434,16 @@ define([
 			}
 
 			// Function: Toggle video modal visibility
-			function toggleModal(state, index) {
+			function toggleModal(state, index, id) {
 				if ( state ){
 					emptyModal();
-					populateModal(index);
+
+					if ( id && !index ){
+						populateModal(false, id);
+					} else {
+						populateModal(index);
+					}
+
 					$html.attr('data-vw-modal-active', '');
 
 					if ( DEBUG ){
@@ -430,6 +456,16 @@ define([
 					if ( DEBUG ){
 						console.log('Info: Close modal.');
 					}
+				}
+			}
+
+			function scrollModal(direction) {
+				var top = $videoModal.scrollTop();
+
+				if ( direction === 'down' ){
+					$videoModal.scrollTop(top + 40);
+				} else if ( direction === 'up' ){
+					$videoModal.scrollTop(top - 40);
 				}
 			}
 
@@ -461,8 +497,16 @@ define([
 			}
 
 			// Function: Toggle video modal visibility
-			function populateModal(index) {
-				var content = data.videos[index];
+			function populateModal(index, id) {
+				var content;
+
+				if ( id && !index ){
+					index = parseFloat($videoList.find('[data-vw-video-id=' + id + ']').attr('data-vw-video-index'));
+				 	content = _.find(data.videos, ['id', id.toString()]);
+				} else {
+					content = data.videos[index];
+				}
+
 				var lastIndex = parseFloat($videoList.attr('data-vw-video-tiles-last-index'));
 
 				if ( content && ( index >= 0 || index <= lastIndex ) ){
@@ -510,7 +554,11 @@ define([
 
 					$videoModal.find('[data-vw-share]').each(function(){
 						var share = socialShare($(this).attr('data-vw-share-target'), 'vid' + index, img, msg, content.sharelink);
-						$(this).attr('href', share);
+						if ( share ){
+							$(this).attr('href', share);
+						} else {
+							$(this).parent().remove();
+						}
 					});
 
 					if ( DEBUG ){
@@ -977,6 +1025,8 @@ define([
 					} else {
 						return 'https://www.facebook.com/dialog/share?app_id=180444840287&href=' + encodeURIComponent(link) + '&redirect_uri=' + encodeURIComponent(link);
 					}
+				} else if ( target === 'linkedin' ){
+					return 'http://www.linkedin.com/shareArticle?mini=true&title=' + encodeURIComponent(msg) + '&url=' + encodeURIComponent(link);
 				} else {
 					// Failed
 					if ( DEBUG ){
@@ -985,7 +1035,7 @@ define([
 						console.log(DEBUG_msg);
 					}
 
-					return '';
+					return false;
 				}
 			}
 
@@ -993,7 +1043,7 @@ define([
 			function loadShares() {
 				var url;
 
-				url = 'https://graph.facebook.com/http://www.theguardian.com/australia-news/ng-interactive/2016/jul/14/dear-australia-guardian-video-series'; //'https://graph.facebook.com/' + encodeURIComponent(window.location.href);
+				url = 'https://graph.facebook.com/' + encodeURIComponent(window.location.href);
 
 				if ( DEBUG ){
 					console.log('Info: Loading shares for: ' + url + '.');
@@ -1006,7 +1056,7 @@ define([
 					dataType: "json"
 				}).done(function( response ){
 					// success
-					if ( response ){
+					if ( response.share ){
 						$interactive.find('[data-vw-social-shares]').text(response.share.share_count);
 
 						if ( DEBUG ){
