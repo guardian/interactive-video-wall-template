@@ -21,7 +21,7 @@ define([
 		el.innerHTML = templateHTML;
 		el.setAttribute('data-vw-interactive', '');
 
-		var isApp = location.href.indexOf('http') !== 0 ? 0 : 1;
+		var isApp = location.href.indexOf('http') !== 0 ? 1 : 0;
 
 		if ( isApp ){
 			el.setAttribute('data-vw-interactive-show-scroll', '');
@@ -50,6 +50,7 @@ define([
 			var $interactive = $('[data-vw-interactive]');
 			var $videoList = $('[data-vw-video-tiles]');
 			var $articleList = $('[data-vw-article-tiles]');
+			var $paidList = $('[data-vw-paid-tiles]');
 			var $videoModal = $('[data-vw-video-modal]');
 			var $videoWrapper = $('[data-vw-video-wrapper]');
 			var $loading = $('[data-vw-loading-overlay]');
@@ -67,39 +68,77 @@ define([
 
 			// Load JSON data
 			if ( config.data ){
-				var main = loadData(config.data.main);
-				var videos = loadData(config.data.videos);
-				var articles = loadData(config.data.articles);
-				
-				// Data loaded?
-				$.when( main, videos, articles ).done(function( data_main, data_videos, data_articles ){
-					if ( data_main && data_videos && data_articles ){
+				if ( config.data.paid ){
+					var main = loadData(config.data.main);
+					var videos = loadData(config.data.videos);
+					var articles = loadData(config.data.articles);
+					var paid = loadData(config.data.paid);
+					
+					// Data loaded?
+					$.when( main, videos, articles, paid ).done(function( data_main, data_videos, data_articles, data_paid ){
+						if ( data_main && data_videos && data_articles && data_paid ){
 
-						// Success, initiate page build
-						data.main = data_main[0].sheets.Sheet1[0];
-						data.videos = _.sortBy(data_videos[0].sheets.Sheet1, ['order']);
-						data.articles = data_articles[0].sheets.Sheet1;
-						populateVideoWall();
+							// Success, initiate page build
+							data.main = data_main[0].sheets.Sheet1[0];
+							data.videos = _.sortBy(data_videos[0].sheets.Sheet1, ['order']);
+							data.articles = _.sortBy(data_articles[0].sheets.Sheet1, ['order']);
+							data.paid = _.sortBy(data_paid[0].sheets.Sheet1, ['order']);
+							populateVideoWall();
 
-					} else {
+						} else {
+							
+							// Failed
+							if ( DEBUG ){
+								console.log('Fatal Error: A data source request contained no data.');
+							} else {
+								console.log(DEBUG_msg_fatal);
+							}
+
+						}
+					}).fail(function(error) {
 						
-						// Failed
 						if ( DEBUG ){
-							console.log('Fatal Error: A data source request contained no data.');
+							console.log('Fatal Error: An AJAX request resulted in a ' + error.status + ' ' + error.statusText + ' error.');
 						} else {
 							console.log(DEBUG_msg_fatal);
 						}
 
-					}
-				}).fail(function(error) {
+					});
+				} else {
+					var main = loadData(config.data.main);
+					var videos = loadData(config.data.videos);
+					var articles = loadData(config.data.articles);
 					
-					if ( DEBUG ){
-						console.log('Fatal Error: An AJAX request resulted in a ' + error.status + ' ' + error.statusText + ' error.');
-					} else {
-						console.log(DEBUG_msg_fatal);
-					}
+					// Data loaded?
+					$.when( main, videos, articles ).done(function( data_main, data_videos, data_articles ){
+						if ( data_main && data_videos && data_articles ){
 
-				});
+							// Success, initiate page build
+							data.main = data_main[0].sheets.Sheet1[0];
+							data.videos = _.sortBy(data_videos[0].sheets.Sheet1, ['order']);
+							data.articles = data_articles[0].sheets.Sheet1;
+							populateVideoWall();
+
+						} else {
+							
+							// Failed
+							if ( DEBUG ){
+								console.log('Fatal Error: A data source request contained no data.');
+							} else {
+								console.log(DEBUG_msg_fatal);
+							}
+
+						}
+					}).fail(function(error) {
+						
+						if ( DEBUG ){
+							console.log('Fatal Error: An AJAX request resulted in a ' + error.status + ' ' + error.statusText + ' error.');
+						} else {
+							console.log(DEBUG_msg_fatal);
+						}
+
+					});
+				}
 			}
 
 			// Functions
@@ -178,6 +217,11 @@ define([
 				});
 				$('[data-vw-interactive-supporter-abouturl]').attr('href', data.main['supporter.abouturl']);
 				$('[data-vw-interactive-readmoretitle]').html(data.main.readmoretitle);
+				$('[data-vw-interactive-paidtitle]').html(data.main['paid.title']);
+				$('[data-vw-interactive-paid-img]').attr({
+					'src': data.main['paid.img'],
+					'alt': data.main['paid.name']
+				});
 				$('[data-vw-interactive-copyright]').html(data.main.copyright);
 
 				if ( DEBUG ){
@@ -207,6 +251,7 @@ define([
 				// Loop through and add the videos
 				var videoCount = 0;
 				var lastIndex;
+				var lastId = 0;
 
 				for ( var v = 0; v < data.videos.length; v++ ){
 					if ( data.videos[v].type === 'featured' ){
@@ -224,6 +269,10 @@ define([
 						if ( DEBUG ){
 							console.log('Info: Placeholder Video tile added.');
 						}
+					}
+
+					if ( parseInt(data.videos[v].id) > lastId ){
+						lastId = parseInt(data.videos[v].id);
 					}
 
 					$videoList.append( videoTile(data.videos[v], v) );
@@ -260,6 +309,28 @@ define([
 					}
 				}
 
+				// Loop through and add the paid articles
+				if ( data.paid[0].id !== '-1' && data.paid.length > 0 ){
+					var articleCount = data.paid.length >= 4 ? 4 : data.paid.length;
+					var articles = 0;
+
+					for ( var a = 0; a < articleCount; a++ ){
+						$paidList.append( articleTile(data.paid[a], a) );
+						articles++;
+					}
+
+					if ( DEBUG ){
+						console.log('Info: ' + articles + ' Paid Article tiles added.');
+					}
+				} else {
+					$paidList.parent().remove();
+					$('[data-vw-interactive-readmoretitle]').remove();
+
+					if ( DEBUG ){
+						console.log('Info: No paid articles provided.');
+					}
+				}
+
 				// Add listeners
 				addVideoWallListeners();
 
@@ -269,14 +340,19 @@ define([
 
 				if ( startingVideo !== '' ){
 					var id = startingVideo.split('vid');
+					var vid = _.find(data.videos, ['id', id[1].toString()]);
 					id = parseFloat(id[1]);
 
-					if ( id !== NaN && id >= 0 && id <= lastIndex && data.videos[id].type !== 'placeholder' ){
+					if ( id !== NaN && id > 0 && id <= lastId && vid && vid.type !== 'placeholder' ){
 						if ( DEBUG ){
 							console.log('Info: Starting video detected, video modal initiated.');
 						}
 
 						toggleModal(true, false, id);
+					} else {
+						if ( DEBUG ){
+							console.log('Error: Starting video detected but ID not found.');
+						}
 					}
 				}
 

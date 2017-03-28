@@ -1,3 +1,5 @@
+@import url("//interactive.guim.co.uk/fonts/displaysans/displaysans_medium_500.css");
+
 /* GUARDIAN SCSS */
 @import 'modules/_guardian';
 /* GUARDIAN SCSS ENDS */
@@ -11,6 +13,7 @@
 /* Variables */
 $font-sans-serif: "Guardian Text Sans Web","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
 $font-serif: "Guardian Text Egyptian Web",Georgia,serif;
+$font-paid: "Display Sans", "Guardian Text Sans Web","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
 
 $color-bg: black;
 $color-text: #999;
@@ -24,8 +27,13 @@ $color-modal-bg: rgba(0,0,0, 0.9);
 $color-video-bg: #333;
 $color-article-bg-hover: #202020;
 $color-button-active: #767676;
+$color-paid-bg: #eaeaea;
+$color-paid-highlight: #69d1ca;
+$color-paid-article-bg: #d7d7d7;
+$color-paid-article-text: #666666;
 
 $border-divider: 1px dotted $color-border;
+$border-paid-divider: 1px dotted #bbbbbb;
 
 /* Mixins */
 @mixin aspect-ratio($width, $height) {
@@ -890,30 +898,96 @@ body {
 }
 
 /* Footer */
-.vw-footer {
-	padding-bottom: 3rem;
+.vw-articles {
 	overflow: hidden;
 
 	&-title {
 		position: absolute;
-		top: 1rem;
+		top: 0;
+		bottom: 0;
+		padding: 1rem 0.5rem 1rem;
 		left: -10rem;
-		width: 9rem;
-		margin-top: 0;
-		color: $color-title;
+		width: 8rem;
+		max-width: 8rem;
+
+		h2 {
+			color: $color-title;
+			font-size: 1.2rem;
+			line-height: 1.25rem;
+			margin: 0;
+		}
+
+		&-logo {
+			position: absolute;
+			bottom: 1rem;
+			left: 0.75rem;
+
+			svg {
+				fill: #333333;
+				color: #333333;
+			}
+		}
 
 		@media (max-width: 739px) {
 			max-width: 75%;
 		}
 
 		@media (max-width: 1139px) {
-			position: static;
+			position: relative;
 			width: auto;
+			left: auto;
+			max-width: none;
+			padding: 1rem 0;
+
+			&-logo {
+				top: 0.75rem;
+				right: 1rem;
+				left: auto;
+				bottom: auto;
+				line-height: 0;
+			}
 		}
 	}
 
+	&-paid {
+		background: $color-paid-bg;
+		font-family: $font-paid;
+
+		.vw-articles-title {
+			background: $color-paid-highlight;
+
+			h2 {
+				color: white;
+				font-weight: 500;
+			}
+
+			@media (max-width: 1139px) {
+				padding: 3.5rem 1rem 1rem;
+			}
+		}
+
+		.vw-article-tiles {
+			border: none;
+		}
+	}
+
+	@media (max-width: 739px) {
+		.vw-container-left,
+		.vw-container-right {
+			width: 100%;
+		}
+	}
+}
+
+/* Footer */
+.vw-footer {
+	padding-bottom: 3rem;
+	overflow: hidden;
+
 	&-branding {
 		overflow: hidden;
+		border-top: $border-divider;
+		padding-top: 1rem;
 		
 		p {
 			margin: 0;
@@ -948,7 +1022,6 @@ body {
 .vw-article-tiles {
 	overflow: hidden;
 	border-top: $border-divider;
-	border-bottom: $border-divider;
 	padding: 1rem 0 3rem;
 
 	&-item {
@@ -1046,6 +1119,29 @@ body {
 	}
 }
 
+.vw-articles-paid {
+	.vw-article-tiles {
+		&-item {
+			&-inner {
+				background: $color-paid-article-bg;
+				border-top: 1px solid $color-paid-highlight;
+			}
+
+			&:before {
+				border-right: $border-paid-divider;
+			}
+
+			&-body {
+				h3 {
+					color: $color-paid-article-text;
+					font-weight: 500;
+					font-size: 100%;
+				}
+			}
+		}
+	}
+}
+
 /* Modal */
 html[data-vw-modal-active] {
 	overflow: hidden !important;
@@ -1077,7 +1173,7 @@ html[data-vw-interactive-loading][data-vw-modal-active] {
 	&-scroll-controls {
 		position: fixed;
 		z-index: 500;
-		bottom: 20px;
+		bottom: 0;
 		width: 100%;
 		text-align: center;
 		display: none;
@@ -1087,8 +1183,10 @@ html[data-vw-interactive-loading][data-vw-modal-active] {
 			position: static;
 		}
 
-		[data-vw-interactive-show-scroll] & {
-			display: block;
+		@media (max-width: 739px) {
+			[data-vw-interactive-show-scroll] & {
+				display: block;
+			}
 		}
 	}
 
