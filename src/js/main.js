@@ -797,6 +797,34 @@ define([
 							window.videoWall.config.initialVolume = $player.volume();
 						});
 
+						if ( config.trackingLabel ){
+							var category = content['video.tracking.category'];
+							var played = false;
+							var ended = false;
+
+							$player.on('play', function(e){
+								if ( !played ){
+									ga('allEditorialPropertyTracker.send', 'event', { 
+										eventCategory: category || category !== '' ? category : 'Vid #' + content.id, 
+										eventAction: 'played', 
+										eventLabel: config.trackingLabel
+									});
+									played = true;
+								}
+							});
+
+							$player.on('ended', function(e){
+								if ( !ended ){
+									ga('allEditorialPropertyTracker.send', 'event', { 
+										eventCategory: category || category !== '' ? category : 'Vid #' + content.id, 
+										eventAction: 'completed', 
+										eventLabel: config.trackingLabel
+									});
+									ended = true;
+								}
+							});
+						}
+
 						if ( DEBUG ){
 							console.log('Info: Videojs enhancements and tweaks completed.');
 						}

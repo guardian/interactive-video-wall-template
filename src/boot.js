@@ -35,6 +35,7 @@ define([], function() {
             window.videoWall = {
             	config: {
             		DEBUG: true,
+            		trackingLabel: 'Video Wall',
             		data: {
             			main: "1okuaX6Gem9z5Vd3VqFcGHzxS5k0DFMhf9Mp1qpQJXb4",
             			videos: "1322jBQ9h5wKPpfKAVGQSSh9d-EDBVvVx6M7O1c1-XNY",
@@ -63,18 +64,12 @@ define([], function() {
         	// Load Google Analytics
         	if ( !window.ga && DEBUG ){
         		addInlineScript("(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics_debug.js','ga');");
+        		addInlineScript('ga("create", "UA-78705427-1", "auto", "allEditorialPropertyTracker", {sampleRate: 100, siteSpeedSampleRate: 0.1, userId: null});');
 
         		if ( DEBUG ){
 					console.log('Info: Google Analytics initialised in debug mode.');
 				}
-        	} else if ( !window.ga && !DEBUG ){
-        		addInlineScript("(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');");
-
-        		if ( DEBUG ){
-					console.log('Info: Google Analytics initialised.');
-				}
         	}
-        	addInlineScript("ga('create', 'UA-50967074-3', 'auto', 'glabsau');");
 
             // Load Main CSS
             addCSS('@@assetPath@@/css/main.css');
