@@ -51,9 +51,11 @@ define([
 			var $videoList = $('[data-vw-video-tiles]');
 			var $articleList = $('[data-vw-article-tiles]');
 			var $paidList = $('[data-vw-paid-tiles]');
+			var hasPaid = false;
 			var $videoModal = $('[data-vw-video-modal]');
 			var $videoWrapper = $('[data-vw-video-wrapper]');
 			var $loading = $('[data-vw-loading-overlay]');
+			var $paidDropdown = $('#vw-articles-paid-about');
 			var $player;
 			var breakpoint = getBreakpoint();
 			if ( DEBUG ){
@@ -73,6 +75,8 @@ define([
 					var videos = loadData(config.data.videos);
 					var articles = loadData(config.data.articles);
 					var paid = loadData(config.data.paid);
+
+					hasPaid = true;
 					
 					// Data loaded?
 					$.when( main, videos, articles, paid ).done(function( data_main, data_videos, data_articles, data_paid ){
@@ -217,11 +221,13 @@ define([
 				});
 				$('[data-vw-interactive-supporter-abouturl]').attr('href', data.main['supporter.abouturl']);
 				$('[data-vw-interactive-readmoretitle]').html(data.main.readmoretitle);
-				$('[data-vw-interactive-paidtitle]').html(data.main['paid.title']);
-				$('[data-vw-interactive-paid-img]').attr({
-					'src': data.main['paid.img'],
-					'alt': data.main['paid.name']
-				});
+				if ( hasPaid ){
+					$('[data-vw-interactive-paidtitle]').html(data.main['paid.title']);
+					$('[data-vw-interactive-paid-img]').attr({
+						'src': data.main['paid.img'],
+						'alt': data.main['paid.name']
+					});
+				}
 				$('[data-vw-interactive-copyright]').html(data.main.copyright);
 
 				if ( DEBUG ){
@@ -301,8 +307,7 @@ define([
 						console.log('Info: ' + articles + ' Article tiles added.');
 					}
 				} else {
-					$articleList.parent().remove();
-					$('[data-vw-interactive-readmoretitle]').remove();
+					$('#vw-articles-related').remove();
 
 					if ( DEBUG ){
 						console.log('Info: No articles provided.');
@@ -310,25 +315,28 @@ define([
 				}
 
 				// Loop through and add the paid articles
-				if ( data.paid[0].id !== '-1' && data.paid.length > 0 ){
-					var articleCount = data.paid.length >= 4 ? 4 : data.paid.length;
-					var articles = 0;
+				if ( hasPaid ){
+					if ( data.paid[0].id !== '-1' && data.paid.length > 0 ){
+						var articleCount = data.paid.length >= 4 ? 4 : data.paid.length;
+						var articles = 0;
 
-					for ( var a = 0; a < articleCount; a++ ){
-						$paidList.append( articleTile(data.paid[a], a) );
-						articles++;
-					}
+						for ( var a = 0; a < articleCount; a++ ){
+							$paidList.append( articleTile(data.paid[a], a) );
+							articles++;
+						}
 
-					if ( DEBUG ){
-						console.log('Info: ' + articles + ' Paid Article tiles added.');
+						if ( DEBUG ){
+							console.log('Info: ' + articles + ' Paid Article tiles added.');
+						}
+					} else {
+						$('#vw-articles-paid').remove();
+
+						if ( DEBUG ){
+							console.log('Info: No paid articles provided.');
+						}
 					}
 				} else {
-					$paidList.parent().remove();
-					$('[data-vw-interactive-readmoretitle]').remove();
-
-					if ( DEBUG ){
-						console.log('Info: No paid articles provided.');
-					}
+					$('#vw-articles-paid').remove();
 				}
 
 				// Add listeners
@@ -505,6 +513,18 @@ define([
 								$(this).removeClass('vjs-mousemoved');
 							}, 2000);
 						}, 100));
+					}
+				});
+
+				// Show paid dropdown
+				$interactive.on('click', '#vw-articles-paid-about-button', function(e){
+					e.stopPropagation();
+					toggleDropdown();
+				});
+
+				$(document).on('click', function(e){
+					if ( $('body').hasClass('vw-paid-about-dropdown-open') ){
+						toggleDropdown();
 					}
 				});
 			}
@@ -1155,6 +1175,19 @@ define([
 					}
 
 				});
+			}
+
+			function toggleDropdown() {
+				var $body = $('body');
+				if ( $body.hasClass('vw-paid-about-dropdown-open') ){
+					$body.removeClass('vw-paid-about-dropdown-open');
+					$paidDropdown.find('#vw-articles-paid-about-button').attr('aria-expanded', false);
+					$paidDropdown.find('#vw-articles-paid-about-dropdown').attr('aria-hidden', true);
+				} else {
+					$body.addClass('vw-paid-about-dropdown-open');
+					$paidDropdown.find('#vw-articles-paid-about-button').attr('aria-expanded', true);
+					$paidDropdown.find('#vw-articles-paid-about-dropdown').attr('aria-hidden', false);
+				}
 			}
 		});
     }
