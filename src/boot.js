@@ -43,8 +43,8 @@ define([], function() {
             			paid: "1n0___pxSaKJ7y8qSBfOHSba3MeLhhXJBMDb6UBXEc3M"
             		},
             		theme: false, /* {
-            			cssFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.css",
-            			scriptFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.js"
+            			scriptFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.js",
+            			cssFile: "@@assetPath@@/css/main.css"
             		}, */
             		customHeader: {
             			cssFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.css",
@@ -71,18 +71,19 @@ define([], function() {
 				}
         	}
 
-            // Load Main CSS
-            addCSS('@@assetPath@@/css/main.css');
-            if ( DEBUG ){
-				console.log('Info: Main CSS file loaded.');
-			}
-
+            // Load CSS
             if ( window.videoWall.config.theme.cssFile ){
 				// Load Theme CSS
 				addCSS(window.videoWall.config.theme.cssFile);
 
 				if ( DEBUG ){
 					console.log('Info: Theme CSS file "' + window.videoWall.config.theme.cssFile + '" loaded.');
+				}
+            } else {
+            	addCSS('@@assetPath@@/css/main.css');
+	            
+	            if ( DEBUG ){
+					console.log('Info: Main CSS file loaded.');
 				}
             }
 

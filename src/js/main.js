@@ -321,7 +321,7 @@ define([
 						var articles = 0;
 
 						for ( var a = 0; a < articleCount; a++ ){
-							$paidList.append( articleTile(data.paid[a], a) );
+							$paidList.append( articleTile(data.paid[a], a, true) );
 							articles++;
 						}
 
@@ -976,7 +976,7 @@ define([
 			}
 
 			// Function: Article tile item
-			function articleTile(content, index) {
+			function articleTile(content, index, paid) {
 				var images = imageOptions(
 					content['tile.img.mobile'] !== '' ? content['tile.img.mobile'] : false, 
 					content['tile.img.tablet'] !== '' ? content['tile.img.tablet'] : false, 
@@ -1005,7 +1005,11 @@ define([
 					html += '<!-- FOOTER ARTICLE ITEM END -->';
 
 				if ( DEBUG ){
-					console.log('Info: Article tile HTML generated.');
+					if ( paid ){
+						console.log('Info: Paid Article tile HTML generated.');
+					} else {
+						console.log('Info: Article tile HTML generated.');
+					}
 				}
 
 				return html;

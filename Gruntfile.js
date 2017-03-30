@@ -36,7 +36,10 @@ module.exports = function(grunt) {
             sourcemap: 'inline'
        },
         build: {
-            files: { 'build/assets/css/main.css': 'src/css/main.scss' }
+            files: { 
+            	'build/assets/css/main.css': 'src/css/main.scss',
+            	'build/assets/css/main-glabs.css': 'src/css/main-glabs.scss' 
+            }
         }
     },
 
@@ -74,7 +77,7 @@ module.exports = function(grunt) {
           out: 'build/assets/js/main.js',
           generateSourceMaps: false,
           preserveLicenseComments: false,
-          useSourceUrl: true,
+          useSourceUrl: (isDev) ? true : false,
           include: ['main'],
           wrap: {
             start: 'define(["require"],function(require){var req=(function(){',
