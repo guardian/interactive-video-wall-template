@@ -466,22 +466,24 @@ template {
  *
  */
 
-@import url("//interactive.guim.co.uk/fonts/displaysans/displaysans_medium_500.css");
-
 /* GUARDIAN SCSS */
 @import 'modules/_guardian';
 /* GUARDIAN SCSS ENDS */
 
-/* Variables */
-$font-sans-serif: "Guardian Text Sans Web","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
-$font-serif: "Guardian Text Egyptian Web",Georgia,serif;
-$font-paid: "Display Sans", "Guardian Text Sans Web","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+@import url("//interactive.guim.co.uk/fonts/displaysans/displaysans_regular_400.css");
+@import url("//interactive.guim.co.uk/fonts/displaysans/displaysans_semibold_600.css");
 
-$color-bg: black;
-$color-text: #999;
+/* Variables */
+$font-sans-serif: "Display Sans","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+$font-serif: $font-sans-serif;
+$font-paid: $font-sans-serif;
+
+$color-bg: #404040;
+$color-text: #bbb;
 $color-title: white;
 $color-link: #dcdcdc;
-$color-text-highlight: #fb0;
+$color-text-highlight: #69d1ca;
+
 $color-border: rgba(255,255,255,0.25);
 $color-overlay: rgba(0,0,0, 0.6);
 $color-overlay-active: rgba(0,0,0,0.35);
@@ -519,6 +521,7 @@ body {
 	background: $color-bg;
 	color: $color-text;
 	font-family: $font-serif;
+	font-weight: 400;
 	margin: 0;
 	padding: 0;
 	line-height: 1.5;
@@ -706,6 +709,12 @@ body {
 /* Loading */
 .vw-loading {
 	display: none;
+	background-color: $color-bg !important;
+	font-family: $font-sans-serif !important;
+
+	h3 {
+		font-family: $font-sans-serif !important;
+	}
 	
 	&[data-vw-loading] {
 		display: block;
@@ -773,10 +782,10 @@ body {
 				padding: 0;
 				font-size: 1rem;
 				line-height: 1.25rem;
-				font-weight: 200;
+				font-weight: 400;
 
 				a {
-					font-weight: 900;
+					font-weight: 600;
 					color: $color-text-highlight;
 					text-decoration: none;
 				}
@@ -786,7 +795,7 @@ body {
 					line-height: 1.1rem;
 
 					a {
-						font-weight: 500;
+						font-weight: 600;
 					}
 				}
 			}
@@ -795,7 +804,7 @@ body {
 				margin: 0;
 				font-size: 2.25rem;
 				line-height: 2.5rem;
-				font-weight: 200;
+				font-weight: 400;
 				padding: 0.2rem 0 2rem;
 				border-bottom: $border-divider;
 				color: $color-title;
@@ -844,7 +853,7 @@ body {
 				margin: 0;
 				padding: 0;
 				font-size: 1.125rem;
-				font-weight: 500;
+				font-weight: 600;
 				color: $color-title;
 			}
 		}
@@ -1341,7 +1350,7 @@ body {
 	&-duration {
 		margin-top: 0.4rem;
 		font-size: 1.125rem;
-		font-weight: 500;
+		font-weight: 600;
 		color: $color-text-highlight;
 
 		.vw-video-tiles-item-normal & {
@@ -1808,7 +1817,7 @@ html[data-vw-interactive-loading][data-vw-modal-active] {
 			position: static;
 		}
 
-		@media (max-width: 739px) {
+		@media (max-width: 979px) {
 			[data-vw-interactive-show-scroll] & {
 				display: block;
 			}

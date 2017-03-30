@@ -34,15 +34,17 @@ define([], function() {
         	
             window.videoWall = {
             	config: {
-            		DEBUG: false,
+            		DEBUG: true,
+            		trackingLabel: 'Video Wall',
             		data: {
-            			main: "12oi2Pm-Ef4XDWU_-Qjf1v0Al8LCdUdyv3Bl67YzfUB4",
-            			videos: "1gOaGqIJT_IaUmNBImLvbT7xsWBzWrttr2nP27aJWfz8",
-            			articles: "1kxMxJtznvgtg1SXehnME3IQLM4NDrZz9d7Zgjq9J1eU"
+            			main: "1okuaX6Gem9z5Vd3VqFcGHzxS5k0DFMhf9Mp1qpQJXb4",
+            			videos: "1322jBQ9h5wKPpfKAVGQSSh9d-EDBVvVx6M7O1c1-XNY",
+            			articles: "1n0___pxSaKJ7y8qSBfOHSba3MeLhhXJBMDb6UBXEc3M",
+            			paid: "1n0___pxSaKJ7y8qSBfOHSba3MeLhhXJBMDb6UBXEc3M"
             		},
             		theme: false, /* {
-            			cssFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.css",
-            			scriptFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.js"
+            			scriptFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.js",
+            			cssFile: "@@assetPath@@/css/main.css"
             		}, */
             		customHeader: {
             			cssFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.css",
@@ -62,31 +64,26 @@ define([], function() {
         	// Load Google Analytics
         	if ( !window.ga && DEBUG ){
         		addInlineScript("(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics_debug.js','ga');");
+        		addInlineScript('ga("create", "UA-78705427-1", "auto", "allEditorialPropertyTracker", {sampleRate: 100, siteSpeedSampleRate: 0.1, userId: null});');
 
         		if ( DEBUG ){
 					console.log('Info: Google Analytics initialised in debug mode.');
 				}
-        	} else if ( !window.ga && !DEBUG ){
-        		addInlineScript("(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');");
-
-        		if ( DEBUG ){
-					console.log('Info: Google Analytics initialised.');
-				}
         	}
-        	addInlineScript("ga('create', 'UA-50967074-3', 'auto', 'glabsau');");
 
-            // Load Main CSS
-            addCSS('@@assetPath@@/css/main.css');
-            if ( DEBUG ){
-				console.log('Info: Main CSS file loaded.');
-			}
-
+            // Load CSS
             if ( window.videoWall.config.theme.cssFile ){
 				// Load Theme CSS
 				addCSS(window.videoWall.config.theme.cssFile);
 
 				if ( DEBUG ){
 					console.log('Info: Theme CSS file "' + window.videoWall.config.theme.cssFile + '" loaded.');
+				}
+            } else {
+            	addCSS('@@assetPath@@/css/main.css');
+	            
+	            if ( DEBUG ){
+					console.log('Info: Main CSS file loaded.');
 				}
             }
 

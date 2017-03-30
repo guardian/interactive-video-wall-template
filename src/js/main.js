@@ -21,7 +21,7 @@ define([
 		el.innerHTML = templateHTML;
 		el.setAttribute('data-vw-interactive', '');
 
-		var isApp = location.href.indexOf('http') !== 0 ? 0 : 1;
+		var isApp = location.href.indexOf('http') !== 0 ? 1 : 0;
 
 		if ( isApp ){
 			el.setAttribute('data-vw-interactive-show-scroll', '');
@@ -50,9 +50,12 @@ define([
 			var $interactive = $('[data-vw-interactive]');
 			var $videoList = $('[data-vw-video-tiles]');
 			var $articleList = $('[data-vw-article-tiles]');
+			var $paidList = $('[data-vw-paid-tiles]');
+			var hasPaid = false;
 			var $videoModal = $('[data-vw-video-modal]');
 			var $videoWrapper = $('[data-vw-video-wrapper]');
 			var $loading = $('[data-vw-loading-overlay]');
+			var $paidDropdown = $('#vw-articles-paid-about');
 			var $player;
 			var breakpoint = getBreakpoint();
 			if ( DEBUG ){
@@ -67,39 +70,79 @@ define([
 
 			// Load JSON data
 			if ( config.data ){
-				var main = loadData(config.data.main);
-				var videos = loadData(config.data.videos);
-				var articles = loadData(config.data.articles);
-				
-				// Data loaded?
-				$.when( main, videos, articles ).done(function( data_main, data_videos, data_articles ){
-					if ( data_main && data_videos && data_articles ){
+				if ( config.data.paid ){
+					var main = loadData(config.data.main);
+					var videos = loadData(config.data.videos);
+					var articles = loadData(config.data.articles);
+					var paid = loadData(config.data.paid);
 
-						// Success, initiate page build
-						data.main = data_main[0].sheets.Sheet1[0];
-						data.videos = _.sortBy(data_videos[0].sheets.Sheet1, ['order']);
-						data.articles = data_articles[0].sheets.Sheet1;
-						populateVideoWall();
+					hasPaid = true;
+					
+					// Data loaded?
+					$.when( main, videos, articles, paid ).done(function( data_main, data_videos, data_articles, data_paid ){
+						if ( data_main && data_videos && data_articles && data_paid ){
 
-					} else {
+							// Success, initiate page build
+							data.main = data_main[0].sheets.Sheet1[0];
+							data.videos = _.sortBy(data_videos[0].sheets.Sheet1, ['order']);
+							data.articles = _.sortBy(data_articles[0].sheets.Sheet1, ['order']);
+							data.paid = _.sortBy(data_paid[0].sheets.Sheet1, ['order']);
+							populateVideoWall();
+
+						} else {
+							
+							// Failed
+							if ( DEBUG ){
+								console.log('Fatal Error: A data source request contained no data.');
+							} else {
+								console.log(DEBUG_msg_fatal);
+							}
+
+						}
+					}).fail(function(error) {
 						
-						// Failed
 						if ( DEBUG ){
-							console.log('Fatal Error: A data source request contained no data.');
+							console.log('Fatal Error: An AJAX request resulted in a ' + error.status + ' ' + error.statusText + ' error.');
 						} else {
 							console.log(DEBUG_msg_fatal);
 						}
 
-					}
-				}).fail(function(error) {
+					});
+				} else {
+					var main = loadData(config.data.main);
+					var videos = loadData(config.data.videos);
+					var articles = loadData(config.data.articles);
 					
-					if ( DEBUG ){
-						console.log('Fatal Error: An AJAX request resulted in a ' + error.status + ' ' + error.statusText + ' error.');
-					} else {
-						console.log(DEBUG_msg_fatal);
-					}
+					// Data loaded?
+					$.when( main, videos, articles ).done(function( data_main, data_videos, data_articles ){
+						if ( data_main && data_videos && data_articles ){
 
-				});
+							// Success, initiate page build
+							data.main = data_main[0].sheets.Sheet1[0];
+							data.videos = _.sortBy(data_videos[0].sheets.Sheet1, ['order']);
+							data.articles = data_articles[0].sheets.Sheet1;
+							populateVideoWall();
+
+						} else {
+							
+							// Failed
+							if ( DEBUG ){
+								console.log('Fatal Error: A data source request contained no data.');
+							} else {
+								console.log(DEBUG_msg_fatal);
+							}
+
+						}
+					}).fail(function(error) {
+						
+						if ( DEBUG ){
+							console.log('Fatal Error: An AJAX request resulted in a ' + error.status + ' ' + error.statusText + ' error.');
+						} else {
+							console.log(DEBUG_msg_fatal);
+						}
+
+					});
+				}
 			}
 
 			// Functions
@@ -178,6 +221,13 @@ define([
 				});
 				$('[data-vw-interactive-supporter-abouturl]').attr('href', data.main['supporter.abouturl']);
 				$('[data-vw-interactive-readmoretitle]').html(data.main.readmoretitle);
+				if ( hasPaid ){
+					$('[data-vw-interactive-paidtitle]').html(data.main['paid.title']);
+					$('[data-vw-interactive-paid-img]').attr({
+						'src': data.main['paid.img'],
+						'alt': data.main['paid.name']
+					});
+				}
 				$('[data-vw-interactive-copyright]').html(data.main.copyright);
 
 				if ( DEBUG ){
@@ -207,6 +257,7 @@ define([
 				// Loop through and add the videos
 				var videoCount = 0;
 				var lastIndex;
+				var lastId = 0;
 
 				for ( var v = 0; v < data.videos.length; v++ ){
 					if ( data.videos[v].type === 'featured' ){
@@ -224,6 +275,10 @@ define([
 						if ( DEBUG ){
 							console.log('Info: Placeholder Video tile added.');
 						}
+					}
+
+					if ( parseInt(data.videos[v].id) > lastId ){
+						lastId = parseInt(data.videos[v].id);
 					}
 
 					$videoList.append( videoTile(data.videos[v], v) );
@@ -252,12 +307,36 @@ define([
 						console.log('Info: ' + articles + ' Article tiles added.');
 					}
 				} else {
-					$articleList.parent().remove();
-					$('[data-vw-interactive-readmoretitle]').remove();
+					$('#vw-articles-related').remove();
 
 					if ( DEBUG ){
 						console.log('Info: No articles provided.');
 					}
+				}
+
+				// Loop through and add the paid articles
+				if ( hasPaid ){
+					if ( data.paid[0].id !== '-1' && data.paid.length > 0 ){
+						var articleCount = data.paid.length >= 4 ? 4 : data.paid.length;
+						var articles = 0;
+
+						for ( var a = 0; a < articleCount; a++ ){
+							$paidList.append( articleTile(data.paid[a], a, true) );
+							articles++;
+						}
+
+						if ( DEBUG ){
+							console.log('Info: ' + articles + ' Paid Article tiles added.');
+						}
+					} else {
+						$('#vw-articles-paid').remove();
+
+						if ( DEBUG ){
+							console.log('Info: No paid articles provided.');
+						}
+					}
+				} else {
+					$('#vw-articles-paid').remove();
 				}
 
 				// Add listeners
@@ -269,14 +348,19 @@ define([
 
 				if ( startingVideo !== '' ){
 					var id = startingVideo.split('vid');
+					var vid = _.find(data.videos, ['id', id[1].toString()]);
 					id = parseFloat(id[1]);
 
-					if ( id !== NaN && id >= 0 && id <= lastIndex && data.videos[id].type !== 'placeholder' ){
+					if ( id !== NaN && id > 0 && id <= lastId && vid && vid.type !== 'placeholder' ){
 						if ( DEBUG ){
 							console.log('Info: Starting video detected, video modal initiated.');
 						}
 
 						toggleModal(true, false, id);
+					} else {
+						if ( DEBUG ){
+							console.log('Error: Starting video detected but ID not found.');
+						}
 					}
 				}
 
@@ -429,6 +513,18 @@ define([
 								$(this).removeClass('vjs-mousemoved');
 							}, 2000);
 						}, 100));
+					}
+				});
+
+				// Show paid dropdown
+				$interactive.on('click', '#vw-articles-paid-about-button', function(e){
+					e.stopPropagation();
+					toggleDropdown();
+				});
+
+				$(document).on('click', function(e){
+					if ( $('body').hasClass('vw-paid-about-dropdown-open') ){
+						toggleDropdown();
 					}
 				});
 			}
@@ -701,6 +797,34 @@ define([
 							window.videoWall.config.initialVolume = $player.volume();
 						});
 
+						if ( config.trackingLabel ){
+							var category = content['video.tracking.category'];
+							var played = false;
+							var ended = false;
+
+							$player.on('play', function(e){
+								if ( !played ){
+									ga('allEditorialPropertyTracker.send', 'event', { 
+										eventCategory: category || category !== '' ? category : 'Vid #' + content.id, 
+										eventAction: 'played', 
+										eventLabel: config.trackingLabel
+									});
+									played = true;
+								}
+							});
+
+							$player.on('ended', function(e){
+								if ( !ended ){
+									ga('allEditorialPropertyTracker.send', 'event', { 
+										eventCategory: category || category !== '' ? category : 'Vid #' + content.id, 
+										eventAction: 'completed', 
+										eventLabel: config.trackingLabel
+									});
+									ended = true;
+								}
+							});
+						}
+
 						if ( DEBUG ){
 							console.log('Info: Videojs enhancements and tweaks completed.');
 						}
@@ -852,7 +976,7 @@ define([
 			}
 
 			// Function: Article tile item
-			function articleTile(content, index) {
+			function articleTile(content, index, paid) {
 				var images = imageOptions(
 					content['tile.img.mobile'] !== '' ? content['tile.img.mobile'] : false, 
 					content['tile.img.tablet'] !== '' ? content['tile.img.tablet'] : false, 
@@ -881,7 +1005,11 @@ define([
 					html += '<!-- FOOTER ARTICLE ITEM END -->';
 
 				if ( DEBUG ){
-					console.log('Info: Article tile HTML generated.');
+					if ( paid ){
+						console.log('Info: Paid Article tile HTML generated.');
+					} else {
+						console.log('Info: Article tile HTML generated.');
+					}
 				}
 
 				return html;
@@ -1079,6 +1207,19 @@ define([
 					}
 
 				});
+			}
+
+			function toggleDropdown() {
+				var $body = $('body');
+				if ( $body.hasClass('vw-paid-about-dropdown-open') ){
+					$body.removeClass('vw-paid-about-dropdown-open');
+					$paidDropdown.find('#vw-articles-paid-about-button').attr('aria-expanded', false);
+					$paidDropdown.find('#vw-articles-paid-about-dropdown').attr('aria-hidden', true);
+				} else {
+					$body.addClass('vw-paid-about-dropdown-open');
+					$paidDropdown.find('#vw-articles-paid-about-button').attr('aria-expanded', true);
+					$paidDropdown.find('#vw-articles-paid-about-dropdown').attr('aria-hidden', false);
+				}
 			}
 		});
     }
