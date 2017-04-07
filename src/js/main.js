@@ -260,14 +260,6 @@ define([
 				var lastId = 0;
 
 				for ( var v = 0; v < data.videos.length; v++ ){
-					if ( data.videos[v].type === 'featured' ){
-						$videoList.attr('data-vw-video-tiles-featured', '');
-
-						if ( DEBUG ){
-							console.log('Info: Feature Video tile added.');
-						}
-					}
-
 					if ( data.videos[v].type !== 'placeholder' ){
 						videoCount++;
 						lastIndex = v;
@@ -797,10 +789,20 @@ define([
 							window.videoWall.config.initialVolume = $player.volume();
 						});
 
+						// Video Tracking
 						if ( config.trackingLabel ){
+							if ( DEBUG ){
+								console.log('Info: Tracking initialised on modal video.');
+							}
+
 							var category = content['video.tracking.category'];
 							var played = false;
 							var ended = false;
+							var tracked = {
+								'twentyfive': false,
+								'fifty': false,
+								'seventyfive': false
+							};
 
 							$player.on('play', function(e){
 								if ( !played ){
@@ -810,6 +812,14 @@ define([
 										eventLabel: config.trackingLabel
 									});
 									played = true;
+
+									if ( DEBUG ){
+										if ( category ){
+											console.log('Info: Video play event tracked on modal video ' + category);
+										} else {
+											console.log('Info: Video play event tracked on modal video Vid #' + content.id);
+										}
+									}
 								}
 							});
 
@@ -821,6 +831,46 @@ define([
 										eventLabel: config.trackingLabel
 									});
 									ended = true;
+
+									if ( DEBUG ){
+										if ( category ){
+											console.log('Info: Video ended event tracked on modal video ' + category);
+										} else {
+											console.log('Info: Video ended event tracked on modal video Vid #' + content.id);
+										}
+									}
+								}
+							});
+
+							$player.on('timeupdate', function(e){
+								var percentage = (($player.duration() - $player.remainingTime())/$player.duration())*100;
+								var jump = false;
+
+								if ( percentage > 25 && percentage < 50 && !tracked.twentyfive ){
+									tracked.twentyfive = true;
+									jump = 25;
+								} else if ( percentage > 50 && percentage < 75 && !tracked.fifty ){
+									tracked.fifty = true;
+									jump = 50;
+								} else if ( percentage > 75 && !tracked.seventyfive ){
+									tracked.seventyfive = true;
+									jump = 75;
+								}
+
+								if ( jump ){
+									ga('allEditorialPropertyTracker.send', 'event', { 
+										eventCategory: category || category !== '' ? category : 'Vid #' + content.id, 
+										eventAction: jump + '% complete', 
+										eventLabel: config.trackingLabel
+									});
+
+									if ( DEBUG ){
+										if ( category ){
+											console.log('Info: Video ' + jump + '% complete event tracked on modal video ' + category);
+										} else {
+											console.log('Info: Video ' + jump + '% complete event tracked on modal video Vid #' + content.id);
+										}
+									}
 								}
 							});
 						}
