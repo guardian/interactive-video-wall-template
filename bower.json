@@ -1,0 +1,25 @@
+{
+  "name": "video-wall-template",
+  "version": "0.0.1",
+  "author": "Ash Jonceski - Diced",
+  "license": "Apache 2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "almond": "0.3.0",
+    "curl": "0.8.12",
+    "jquery": "~2.1.4",
+    "requirejs-plugins": "1.0.3",
+    "reqwest": "~1.1.5",
+    "text": "2.0.10",
+    "video.js": "^5.10.7",
+    "guss": "^3.3.0",
+    "object-fit-images": "*"
+  },
+  "resolutions": {
+    "guss-webfonts": "^4.0.1"
+  }
+}

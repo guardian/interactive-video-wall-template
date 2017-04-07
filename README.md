@@ -1,5 +1,6 @@
-# {%= name %} 
-{%= description %}
+# Interactive Video Wall Template
+This is an immersive template for Video Walls. For full details refer to the Google Doc below:
+https://docs.google.com/a/guardian.co.uk/document/d/1bCOTc79b8DRXkTvqXNShSgEEWCywJ5jjVTa3u-VN8d0
 
 ## Getting started
 If you haven't already installed the following requirements:
@@ -42,12 +43,15 @@ bower. Therefore, it would be preferable if you write your code as AMD modules.
     /js
         - main.js (the starting point for the whole interactive)
         - require.js (requireJS config paths to third-party libraries)
-        /data (sample local data)
+        /vendor (vendor.js files)
         /templates (sample template HTML)
     /imgs
     /css
-        - main.scss (the main interactive's SASS CSS styles)
+        - main.scss (the main editorial theme SASS CSS styles)
+        - main-glabs.scss (the glabs alternate theme)
         /modules (additional SASS CSS modules)
+    /custom
+    	- where custom header and other files should live (custom video header 'Dear Australia' example included)
 ```
 
 
@@ -123,8 +127,6 @@ define(['d3', function(d3) {
 ```
 
 ## Deploying to S3
-Once you ready to deploy to S3 you can use grunt to upload your files.
-
 First you'll need to specify where the files are to be uploaded, this
 is done in the `package.json` file. This path should have been specified
 during the project setup but it can be changed at any time.
@@ -138,24 +140,7 @@ the path to the S3 folder that the deploy task will upload to.
   },
 ```
 
-You will also need to export your AWS credentials into your ENV variables.
-Add the following to your `~/.bashrc` or `~/.bash_profile`:
-
-```bash
-export AWS_ACCESS_KEY_ID=xxxxxxxx
-export AWS_SECRET_ACCESS_KEY=xxxxxx
-```
-
-Next you'll want to simulate the upload to ensure it's going to do what
-you think it will.
-```bash
-> grunt deploy --test
-```
-
-Once you're happy everything looks good, deploy for real.
-```bash
-> grunt deploy
-```
+Auto deploy to S3 has been disabled in this version of the template to avoid mistakes. Manually upload your files to S3, ensuring you double check the location before each upload.
 
 ## Embedded iframe link target
 The embed `index.html` includes a [`<base>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base) tag in the `<head>` with a `target` attribute of `_top`. This will force links

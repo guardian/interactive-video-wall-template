@@ -1,0 +1,26 @@
+<!doctype html>
+<html class="js-on is-modern id--signed-out svg has-flex has-flex-wrap has-fixed">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+        <title></title>
+    </head>
+    <body>
+        <!-- Use the same figure elm as NGW -->
+        <figure class="element-interactive interactive"></figure>
+
+        <!-- Libs -->
+        <script src="@@assetPath@@/js/curl.js"></script>
+
+        <!-- Simulate boot.js -->
+        <script>
+          var el = document.querySelector('.interactive');
+          require = curl;
+          curl(['boot.js'], function(app) {
+                app.boot(el);
+          });
+        </script>
+
+        <script src="//localhost:35729/livereload.js"></script>
+    <body>
+</html>
