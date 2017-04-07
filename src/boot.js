@@ -10,6 +10,13 @@ define([], function() {
         head.appendChild(link);
     }
 
+    function addScript(url) {
+        var body = document.querySelector('body');
+        var script = document.createElement('script');
+        script.setAttribute('src', url);
+        body.appendChild(script);
+    }
+
     function addInlineScript(script) {
         var head = document.querySelector('head');
         var el = document.createElement('script');
@@ -27,7 +34,7 @@ define([], function() {
         	 * This is the place to customise some of the core aspects of the template.
         	 *
         	 * Set DEBUG to true show all debug console logging.
-        	 * The data object is where the keys for the 3 mandatory Google Sheet to JSON data sources should be included.
+        	 * The data object is where the keys for the 3 mandatory and 1 optional Google Sheet to JSON data sources should be included.
         	 * The theme object is where
         	 *
         	 */
@@ -42,14 +49,14 @@ define([], function() {
             			articles: "1n0___pxSaKJ7y8qSBfOHSba3MeLhhXJBMDb6UBXEc3M",
             			paid: "1n0___pxSaKJ7y8qSBfOHSba3MeLhhXJBMDb6UBXEc3M"
             		},
-            		theme: false, /* {
-            			scriptFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.js",
-            			cssFile: "@@assetPath@@/css/main.css"
-            		}, */
-            		customHeader: {
+            		theme: {
+            			scriptFile: false,
+            			cssFile: false /*"@@assetPath@@/css/main-glabs.css"*/
+            		},
+            		customHeader: false /*{
             			cssFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.css",
             			scriptFile: "https://interactive.guim.co.uk/2016/07/dear-australia/custom/dearaustralia.js"
-            		}
+            		}*/
             	}
             };
 
@@ -98,6 +105,16 @@ define([], function() {
             function(err){ 
             	console.error('Fatal Error: Boot failed to load.', err); 
             });
+
+            // Load Script
+            if ( window.videoWall.config.theme.scriptFile ){
+            	// Load Theme Script
+				addScript(window.videoWall.config.theme.scriptFile);
+
+				if ( DEBUG ){
+					console.log('Info: Theme Script file "' + window.videoWall.config.theme.scriptFile + '" loaded.');
+				}
+            }
         }
     };
 });
